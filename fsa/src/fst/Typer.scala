@@ -2,7 +2,7 @@ package fst
 
 /**
  * 
- * @author VUL IN AUB.
+ * @author Akkermans Sven and Nolten Toon
  */
 
 import Syntax._
