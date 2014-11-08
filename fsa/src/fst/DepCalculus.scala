@@ -52,12 +52,12 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkFirst(t: Term) : Term = notImplemented
   override def mkSecond(t: Term) : Term = notImplemented
     
-  // singleton types
+  // singleton types \\SAN: Optional
   override def mkI = notImplemented
   override def mkRefl = notImplemented
   override def mkSubst = notImplemented
   
-  // dependent if
+  // dependent if //SAN: Optional
   override def mkBoolElim = notImplemented
   
   
