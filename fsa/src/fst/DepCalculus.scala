@@ -61,11 +61,18 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkBoolElim = notImplemented
   
   
+  //SAN: Added a couple of possible solution templates but I'm unsure of the correct implementation in Scala. No examples...
+  //	Hence, I'll do only some because I would want to test them first.
   def churchBoolDefinition =  """TODO"""
+    // true Lam(t, None, Lam(f, None, t))
   def truDefinition = """TODO"""
+    // fls Lam(t, None, Lam(f, None, f))
   def flsDefinition = """TODO"""
+    // not Lam(a, None, Lam(t, None, Lam(f, None, Lam( Lam(a,None,f),t))))
   def notDefinition = """TODO"""
+    // and Lam(a, None, Lam(b, None, Lam(Lam(a,None,b), a))))
   def andDefinition = """TODO"""
+    // or Lam(a, None, Lam(b, None, Lam( Lam(a, None, a), b))))
   def orDefinition = """TODO"""
   def boolEqDefinition = """TODO"""
     
