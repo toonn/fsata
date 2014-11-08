@@ -31,6 +31,12 @@ object Syntax {
 	  }
 	}
   
+	/**
+	 * Sven's Additional Notes (SAN):	 
+	 * 
+	 *  No distinguishment brtween types and terms
+	 *  Types are a subset of terms.
+	 */	
 	sealed abstract class Term {
 	  def atomic : Boolean = true
 	  def prettyPrint(): String = prettyPrint(List())
@@ -38,6 +44,11 @@ object Syntax {
 	  def prettyPrintP(names: Names): String = if (atomic) prettyPrint(names) else "(" + prettyPrint(names) + ")"
 	}
 	
+	/**
+	 * Sven's Additional Notes (SAN):
+	 * 
+	 * This section corresponds to Basic Syntax from assignment.
+	 */
 	// Basic language
 	case class Var(i : Int) extends Term { 
 	  override def prettyPrint(names: Names) = names(i)
@@ -60,6 +71,8 @@ object Syntax {
 	    case _        => f.prettyPrintP(names) + " " + t.prettyPrintP(names)
 	  }
 	}
+	
+	// SAN: New wrt STLC 'dependent function types'
 	case class Pi(name: String, a : Term, b : Term) extends Term {
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = {
@@ -73,6 +86,7 @@ object Syntax {
 	  }
 	}
 	
+	// SAN: New wrt STLC 'type of types'
 	case object Set extends Term {
 	  override def prettyPrint(names: Names) = "Set"
 	}
@@ -84,7 +98,16 @@ object Syntax {
 	
 	case object notImplemented extends Term {
 	  override def prettyPrint(names: Names) = "notImplemented"
-	}	
+	}
+	
+	//SAN:	Extended language
+	//In this section we have to add the new syntax.
+	// I've added temporary placeholders for what we have to do.
+	
+	//SAN: Todo implement
+	case object Let extends Term{
+	  	  override def prettyPrint(names: Names) = "notImplemented"
+	}
 
 		
 }

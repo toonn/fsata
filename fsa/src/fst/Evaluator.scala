@@ -20,6 +20,14 @@ class Evaluator {
       shift(subst(t,0,shift(s,1, 0)),-1,0)
     }
 
+    /**
+     * Sven's Additional Notes (SAN):
+     * 
+     * I think that here we should add that terms are also evaluated during typechecking.
+     *  Typechecker requires support for "evaluation under assumptions", i.e., it must evaluate 'inside' or 'under' abstractions
+     *  We are free to experiment with different evaluation strategies( call-by-value, by-name-, by-need...)
+     */
+    
     //TODO: add other cases
 	def eval1[R](t:Term): Option[Term] = {
 	  t match {
@@ -35,6 +43,11 @@ class Evaluator {
       }
     }
     
+    /**
+     * Sven's Additional Notes (SAN):
+     *
+     * All terms in a DTLC normalize. 
+     */
     //TODO: implement full beta reduction
     def normalize(t:Term): Term = t 
 }

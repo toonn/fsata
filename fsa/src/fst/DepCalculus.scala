@@ -60,7 +60,8 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   // dependent if
   override def mkBoolElim = notImplemented
   
-  def churchBoolDefinition = """TODO"""
+  
+  def churchBoolDefinition =  """TODO"""
   def truDefinition = """TODO"""
   def flsDefinition = """TODO"""
   def notDefinition = """TODO"""

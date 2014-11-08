@@ -25,6 +25,11 @@ case class RequiresAnnotation(t: Term, names: Names) extends TypeException() {
   override def errorMessage = "Term requires type annotation: \n" + t.prettyPrint(names)
 }
 
+/**
+ * Sven's Additional Notes (SAN):
+ * 
+ * Types of the variables in the context are allowed to depend on the values of the variables before it. 
+ */
 class Typer(eval: Evaluator) {
   
   def shiftContext(ctx: Context,d: Int, c: Int) : Context = ctx match {
@@ -37,6 +42,8 @@ class Typer(eval: Evaluator) {
 	eval.shift(t,d+1,0)
   }
   
+  //SAN: This function is incomplete and just checks if two terms have the same syntax.
+  //	Add an evaluator to the language and use it in the implementation of this function.
   def equalTerms(t1: Term, t2: Term, ctx: Context): Boolean = {
     (eval.eval(t1),eval.eval(t2)) match {
       case (t1,t2) if t1 == t2 => true
@@ -47,24 +54,39 @@ class Typer(eval: Evaluator) {
   
   def typeOf(t: Term, ctx: Context): Term = tcTerm(t,None,ctx)_2
   
+  /**
+   * Sven's Additional Notes (SAN):
+   * 
+   * Bi-directional typechecking algorithm
+   * Note that we have to give a directed version of each of the rules of Figure 3 on paper/latex.
+   * Note that there should be a rule to switch from checking mode to inference mode when necessary.
+   * 
+   */
+  //SAN:		If a is None, the typechecker is in inference mode.
   def tcTerm(t: Term, a: Option[Term], ctx: Context): (Term,Term) = {
     (t,a.map[Term](eval.eval)) match {
+    	// SAN: Type checking for variable.
     case (Var(d),None) => {
       (Var(d),lookupType(d,ctx))
     }
+    	// SAN: Type checking for abstraction (lambda expression) unannoted version (I think)
+    	//		Has to check that argument type is of type Set    
     case (Lam(n1,None,t),Some(Pi(n2,b,c))) => {
       val (body, _) = tcTerm(t,Some(c),(n1,b)::ctx)
       (Lam(n1,Some(b),body),Pi(n2,b,c))
     }
+        // SAN: Type checking for abstraction (lambda expression) annoted version
+    	//		Has to check that argument type is of type Set
     case (Lam(name,Some(a),t),None) => {
       val (body, c) = tcTerm(t,None,(name,a)::ctx)
       (Lam(name, Some(a),body),Pi(name,a,c))
     }
+    	// SAN: Type checking for application
     case (App(f,t),None) => {
-      val (f1, ty1) = tcTerm(f,None,ctx)
+      val (f1, ty1) = tcTerm(f,None,ctx)	//SAN: type of f, ty1, shoud be equal to Pi type (name, a,b).
       eval.eval(ty1) match {
-        case Pi(name,a,b) => {
-          val (t1, _) = tcTerm(t,Some(a),ctx)
+        case Pi(name,a,b) => {					//SAN: in that case, arg of t should be type a and app f t has type the value of the Pi type
+          val (t1, _) = tcTerm(t,Some(a),ctx)	//		for the argument the function was applied to
           (App(f1,t1), eval.termSubstTop(t1,b))
         } 
         case _       => {
@@ -72,15 +94,19 @@ class Typer(eval: Evaluator) {
         }
       }
     }
+    	// SAN: Type checking for dependent function
     case (Pi(name,a,b),None) => {
-      val (a1, _) = tcTerm(a,Some(Set),ctx)
-      val (b1, _) = tcTerm(b,Some(Set),(name,a1)::ctx)
+      val (a1, _) = tcTerm(a,Some(Set),ctx) //SAN: a1 has to be a type
+      val (b1, _) = tcTerm(b,Some(Set),(name,a1)::ctx) //SAN: b1 has to be a type with (x:a1) added to the context
       (Pi(name,a1,b1),Set)
     }
+    	// SAN: Type checking for Set
     case (Set,None) => {
       (Set,Set)
     }
-    case (Ann(a,t),None) => tcTerm(t,Some(a),ctx)
+    case (Ann(a,t),None) => {
+      tcTerm(t,Some(a),ctx)
+    }
     case (t,Some(a)) => {
       val (t1:Term, a1) = tcTerm(t,None,ctx)
       if (!equalTerms(a,a1,ctx)) throw new UnequalTerms(a,a1,toNames(ctx))
