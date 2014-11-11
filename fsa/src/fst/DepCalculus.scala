@@ -63,23 +63,31 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   
   //SAN: Added a couple of possible solution templates but I'm unsure of the correct implementation in Scala. No examples...
   //	Hence, I'll do only some because I would want to test them first.
+  
   def churchBoolDefinition =  """TODO"""
     // true Lam(t, None, Lam(f, None, t))
   def truDefinition = """TODO"""
     // fls Lam(t, None, Lam(f, None, f))
   def flsDefinition = """TODO"""
-    // not Lam(a, None, Lam(t, None, Lam(f, None, Lam( Lam(a,None,f),t))))
+    // not Lam(a, None, Lam(t, None, Lam(f, None, App( App(a,f), t))))
   def notDefinition = """TODO"""
-    // and Lam(a, None, Lam(b, None, Lam(Lam(a,None,b), a))))
+    // and Lam(a, None, Lam(b, None, App(App(a,b), a))))
   def andDefinition = """TODO"""
-    // or Lam(a, None, Lam(b, None, Lam( Lam(a, None, a), b))))
+    // or Lam(a, None, Lam(b, None, App( App(a, a), None, b))))
   def orDefinition = """TODO"""
+  
   def boolEqDefinition = """TODO"""
     
   def churchNatDefinition = """TODO"""
+  // Zero Lam(n, None, Lam (s, None, s)
   def zeDefinition = """TODO"""
+  // Succ	Lam( n, None, Lam(s, None, Lam (z, None, 
+  //				App(s, App(App(n,s),z)))))
   def suDefinition = """TODO"""
+    
   def isZeroDefinition = """TODO"""
+  //plus	Lam(a, None, Lam(b, None, Lam(c, None, 
+  //				Lam(d, None, App(App(a, c), App(App(b,c),d))))))
   def plusDefinition = """TODO"""
     
   // If you make the optional exercise to define times using the natInd primitive, do it here...

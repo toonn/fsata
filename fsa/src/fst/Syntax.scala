@@ -54,6 +54,10 @@ object Syntax {
 	  override def prettyPrint(names: Names) = names(i)
 	}
 	
+	//SAN: Abstraction: \ x : a . t
+	//		'name' is the Symbol (variable), t is the body (term)
+	//		'a' is the type of the variable bound and can be omitted
+	//				similar as unnatoted lamdas: \ x . t
 	case class Lam(name : String, a : Option[Term], t : Term) extends Term { 
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = {
