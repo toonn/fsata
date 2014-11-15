@@ -29,14 +29,14 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkAnnot(ty: Term, t: Term) = Ann(ty,t)
   
   // booleans
-  override def mkBool = notImplemented
-  override def mkTrue = notImplemented
-  override def mkFalse = notImplemented
-  override def mkIfThenElse(c: Term, e1: Term, e2: Term) = notImplemented
+  override def mkBool = Bool
+  override def mkTrue = True
+  override def mkFalse = False
+  override def mkIfThenElse(c: Term, e1: Term, e2: Term) = IfThenElse(c,e1,e2)
   
   // naturals
-  override def mkNat = notImplemented
-  override def mkZero = notImplemented
+  override def mkNat = Nat
+  override def mkZero = Zero
   override def mkSucc(e: Term) = notImplemented
   override def mkPred(e: Term) = notImplemented
   override def mkIsZero(e: Term) = notImplemented

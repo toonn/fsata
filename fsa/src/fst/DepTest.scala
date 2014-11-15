@@ -39,13 +39,13 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest("""(\A : Set. Set) Set""", calc.mkSet, calc.mkSet)
 	
 	// general lambda calculus stuff...
-	evaluateAndTypeTest("Nat", calc.mkSet, calc.mkNat);	
+	evaluateAndTypeTest("Nat", calc.mkSet, calc.mkNat);	//test 3
 	evaluateAndTypeTest("Bool", calc.mkSet, calc.mkBool);	
 	evaluateAndTypeTest("true", calc.mkBool, calc.mkTrue);	
 	evaluateAndTypeTest("false", calc.mkBool, calc.mkFalse);	
 	evaluateAndTypeTest("0", calc.mkNat, calc.mkZero);	
 	evaluateAndTypeTest("succ 0", calc.mkNat, calc.mkSucc(calc.mkZero));	
-	evaluateAndTypeTest("Set", calc.mkSet, calc.mkSet);	
+	evaluateAndTypeTest("Set", calc.mkSet, calc.mkSet);	//test 9
 	
 	// t_1 -> t_2 === (_ : t_1) -> t_2
 	evaluateAndTypeTest("""Bool -> Bool""", calc.mkSet, calc.mkPi("_",calc.mkBool, calc.mkBool));
@@ -54,22 +54,26 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest("""(A : Set) -> Bool -> A""", calc.mkSet, calc.mkPi("A", calc.mkSet, calc.mkPi("_",calc.mkBool, calc.mkVar(1))));
 	
 	// alpha-equivalence
-    evaluateAndTypeTest("""(x:Nat) -> Nat""", calc.mkSet, calc.mkPi("y",calc.mkNat,calc.mkNat));
-	evaluateAndTypeTest("""\A:Set.A""",calc.mkPi("B",calc.mkSet,calc.mkSet), calc.mkAbs("B",Some(calc.mkSet),calc.mkVar(0)));
+    evaluateAndTypeTest("""(x:Nat) -> Nat""", calc.mkSet, calc.mkPi("y",calc.mkNat,calc.mkNat)); //test 13
+		//test 14
+    evaluateAndTypeTest("""\A:Set.A""",calc.mkPi("B",calc.mkSet,calc.mkSet), calc.mkAbs("B",Some(calc.mkSet),calc.mkVar(0)));
 	
 	evaluateAndTypeTest("""\x:Nat.0""", calc.mkTArr(calc.mkNat,calc.mkNat), calc.mkAbs("x",Some(calc.mkNat),calc.mkZero));	
 	evaluateAndTypeTest("""\x:Nat.succ x""", calc.mkTArr(calc.mkNat,calc.mkNat), calc.mkAbs("x",Some(calc.mkNat),calc.mkSucc(calc.mkVar(0))));
 	evaluateAndTypeTest("""Nat -> Nat""", calc.mkSet, calc.mkTArr(calc.mkNat,calc.mkNat));	
 	evaluateAndTypeTest("""(\x:Nat.0) 0""", calc.mkNat, calc.mkZero);	
+		//test 19
 	evaluateAndTypeTest("let x : Bool = true in x", calc.mkBool, calc.mkTrue);
 	evaluateAndTypeTest("let x : Bool = true in (if x then 3 else 2)", calc.mkNat, calc.mkNatLit(3));
 	evaluateAndTypeTest("succ 0 ", calc.mkNat, calc.mkNatLit(1));
 	evaluateAndTypeTest("succ (pred 0)", calc.mkNat, calc.mkNatLit(1));
 	evaluateAndTypeTest("if true then false else true", calc.mkBool,calc.mkFalse);
+		//test 24
 	evaluateAndTypeTest("iszero pred 0", calc.mkBool, calc.mkTrue);
 	evaluateAndTypeTest("if iszero pred 0 then succ 0 else pred succ 0", calc.mkNat, calc.mkNatLit(1));
 	evaluateAndTypeTest("if iszero 0 then succ 0 else 0", calc.mkNat, calc.mkNatLit(1));
 	evaluateAndTypeTest("if iszero succ 0 then true else false",calc.mkBool,calc.mkFalse);
+		//test 28
 	evaluateAndTypeTest("0",calc.mkNat,calc.mkZero);
 	evaluateAndTypeTest(""" \x:Bool. \y:Bool.x """, 
 			calc.mkPi("_",calc.mkBool,calc.mkPi("_",calc.mkBool,calc.mkBool)),calc.mkAbs("x",Some(calc.mkBool),calc.mkAbs("y",Some(calc.mkBool),calc.mkVar(1)))); // the encoded boolean true over the Bool type
@@ -78,6 +82,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest(""" \b:Bool->Bool->Bool. \t:Bool. \f:Bool. b t f """, 
 			calc.mkPi("_",calc.mkPi("_",calc.mkBool,calc.mkPi("_",calc.mkBool,calc.mkBool)),calc.mkPi("_",calc.mkBool,calc.mkPi("_",calc.mkBool,calc.mkBool))), 
 			calc.mkAbs("b",Some(calc.mkPi("_",calc.mkBool,calc.mkPi("_",calc.mkBool,calc.mkBool))),calc.mkAbs("t",Some(calc.mkBool),calc.mkAbs("f",Some(calc.mkBool),calc.mkApp(calc.mkApp(calc.mkVar(2),calc.mkVar(1)),calc.mkVar(0))))));  // the conditional test
+		//test 32
 	evaluateAndTypeTest(""" (\b:Bool->Bool->Bool. \t:Bool. \f:Bool. b t f) (\x:Bool. \y:Bool.y) true false """, calc.mkBool, calc.mkFalse); // conditional applied to false
 	evaluateAndTypeTest("""(\x:Bool. if x then 0 else 1) true""",calc.mkNat,calc.mkZero);
 	evaluateAndTypeTest("""(\f:Nat->Nat. \n:Nat.f (f n)) (\n:Nat. succ n) 0""", calc.mkNat, calc.mkSucc(calc.mkSucc(calc.mkZero)));
@@ -85,10 +90,12 @@ class DepTest extends FunSuite with ShouldMatchers {
 			calc.mkNat, calc.mkNatLit(4));
 
 	// dependent types: basics
-    evaluateAndTypeTest("""(x:Nat) -> Nat""", calc.mkSet, calc.mkPi("x",calc.mkNat,calc.mkNat));	
+    	//test 36
+	evaluateAndTypeTest("""(x:Nat) -> Nat""", calc.mkSet, calc.mkPi("x",calc.mkNat,calc.mkNat));	
 	evaluateAndTypeTest("Set", calc.mkSet, calc.mkSet);
 	
 	// dependent types: polymorphism
+		//test 38
 	evaluateAndTypeTest("""(\A:Set.\x:A.x) Nat 0""",calc.mkNat,calc.mkZero);
 	evaluateAndTypeTest("""(\A:Set.\x:A.x) Set Nat""",calc.mkSet,calc.mkNat);
 	evaluateAndTypeTest("""(\P:Bool -> Set.\x:Bool.P x) (\x: Bool. if x then Nat else Bool) true""",calc.mkSet,calc.mkNat);
@@ -214,6 +221,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 			calc.mkApp(calc.mkApp(calc.mkRefl, calc.mkNat), calc.mkNatLit(6)));
 
 	// forall n. n + 0 = n
+	//test 66
 	evaluateAndTypeTest(
 	    """let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 	       let prop : Nat -> Set = \ n:Nat. I Nat (plus n 0) n in

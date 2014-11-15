@@ -112,6 +112,29 @@ class Typer(eval: Evaluator) {
       if (!equalTerms(a,a1,ctx)) throw new UnequalTerms(a,a1,toNames(ctx))
       (t1,a1)
     }
+    //SAN Homemade Additions: underneath this line 
+    	//Nats
+    case(Nat, None) => {
+      (Nat,Set)
+    }
+    case(Zero, None) => {
+      (Zero,Nat)
+    }
+    	//Bools
+    case(Bool, None) => {
+      (Bool,Set)
+    }
+    case(True, None) => {
+      (True,Bool)
+    }
+    case(False, None) => {
+      (False,Bool)
+    }
+    case(IfThenElse(c,e1,e2), None) => {
+      //TODO
+      throw new NotImplementedError
+    }
+    //End of SAN additions
     case (t,None) => throw new RequiresAnnotation(t,toNames(ctx))
     }
   }

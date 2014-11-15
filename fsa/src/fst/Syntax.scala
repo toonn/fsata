@@ -1,4 +1,6 @@
 package fst
+
+import scala.xml.PrettyPrinter
 /**
  * 
  * @author Akkermans Sven and Nolten Toon
@@ -107,6 +109,30 @@ object Syntax {
 	//SAN:	Extended language
 	//In this section we have to add the new syntax.
 	// I've added temporary placeholders for what we have to do.
+		
+		//SAN: the nats
+	case object Nat extends Term {
+	  override def prettyPrint(names: Names) = "Nat"
+	}
+	case object Zero extends Term {
+	  override def prettyPrint(names: Names) = "0"
+	}
+
+		//SAN: the bools
+	case object Bool extends Term {
+	  override def prettyPrint(names: Names) = "Bool"
+	}
+	case object True extends Term {
+	  override def prettyPrint(names: Names) = "true"
+	}
+	case object False extends Term {
+	  override def prettyPrint(names: Names) = "false"
+	}
+	case class IfThenElse(c: Term, e1: Term, e2: Term) extends Term {
+		override def prettyPrint(names: Names) = 
+		  "if " + c.prettyPrint(names) + " then " + e1.prettyPrint(names) + " else " + e2.prettyPrint(names)				  
+	}	
+
 	
 	//SAN: Todo implement
 	case object Let extends Term{
