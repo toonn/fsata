@@ -59,7 +59,7 @@ object Syntax {
 	//SAN: Abstraction: \ x : a . t
 	//		'name' is the Symbol (variable), t is the body (term)
 	//		'a' is the type of the variable bound and can be omitted
-	//				similar as unnatoted lamdas: \ x . t
+	//				similar as unannotated lambdas: \ x . t
 	case class Lam(name : String, a : Option[Term], t : Term) extends Term { 
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = {
@@ -106,10 +106,9 @@ object Syntax {
 	  override def prettyPrint(names: Names) = "notImplemented"
 	}
 	
-	//SAN:	Extended language
-	//In this section we have to add the new syntax.
-	// I've added temporary placeholders for what we have to do.
-		
+    ////////////////////////////////////////
+    //SAN  Additions: underneath this line//
+    ////////////////////////////////////////		
 		//SAN: the nats
 	case object Nat extends Term {
 	  override def prettyPrint(names: Names) = "Nat"
@@ -117,7 +116,18 @@ object Syntax {
 	case object Zero extends Term {
 	  override def prettyPrint(names: Names) = "0"
 	}
-
+	case class Succ(e: Term) extends Term {
+		override def prettyPrint(names: Names) = 
+		  "succ " + e.prettyPrint(names)  
+	}
+	case class Pred(e: Term) extends Term {
+		override def prettyPrint(names: Names) = 
+		  "pred " + e.prettyPrint(names)  
+	}
+	case class IsZero(e: Term) extends Term {
+		override def prettyPrint(names: Names) = 
+		  "isZero " + e.prettyPrint(names)  
+	}
 		//SAN: the bools
 	case object Bool extends Term {
 	  override def prettyPrint(names: Names) = "Bool"

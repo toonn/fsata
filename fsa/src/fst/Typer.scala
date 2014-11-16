@@ -18,6 +18,14 @@ case class UnequalTerms(t1: Term,t2: Term, names: Names) extends TypeException()
 case class ExpectedPi(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Pi type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
+//SAN: added
+case class ExpectedNat(t: Term, ty: Term, names: Names) extends TypeException() {
+  override def errorMessage = "Expected Nat type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
+}
+//SAN: added
+case class ExpectedBool(t: Term, ty: Term, names: Names) extends TypeException() {
+  override def errorMessage = "Expected Bool type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
+}
 case class ExpectedSigma(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Sigma type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
@@ -112,13 +120,49 @@ class Typer(eval: Evaluator) {
       if (!equalTerms(a,a1,ctx)) throw new UnequalTerms(a,a1,toNames(ctx))
       (t1,a1)
     }
-    //SAN Homemade Additions: underneath this line 
+    
+    ////////////////////////////////////////
+    //SAN  Additions: underneath this line//
+    ////////////////////////////////////////
     	//Nats
     case(Nat, None) => {
       (Nat,Set)
     }
     case(Zero, None) => {
       (Zero,Nat)
+    }
+    case(Succ(e), None) => {
+    	val (e1,ty1) = tcTerm(e,None,ctx)
+    	eval.eval(ty1) match {
+        case Nat => {
+           (Succ(e),Nat)
+        }
+        case _       => {
+          throw new ExpectedNat(e,ty1,toNames(ctx)) //TODO
+        }
+    	}
+    }
+    case(Pred(e), None) => {
+    	val (e1,ty1) = tcTerm(e,None,ctx)
+    	eval.eval(ty1) match {
+        case Nat => {
+           (Pred(e),Nat)
+        }
+        case _       => {
+          throw new ExpectedNat(e,ty1,toNames(ctx))
+        }
+    	}
+    }
+    case(IsZero(e), None) => {
+    	val (e1,ty1) = tcTerm(e,None,ctx)
+    	eval.eval(ty1) match {
+        case Nat => {
+           (IsZero(e),Bool)
+        }
+        case _       => {
+          throw new ExpectedNat(e,ty1,toNames(ctx))
+        }
+    	}
     }
     	//Bools
     case(Bool, None) => {
@@ -131,8 +175,21 @@ class Typer(eval: Evaluator) {
       (False,Bool)
     }
     case(IfThenElse(c,e1,e2), None) => {
-      //TODO
-      throw new NotImplementedError
+    	val (c1,ty1) = tcTerm(c,None,ctx)
+    	val (e11,ty11) = tcTerm(e1,None,ctx)
+    	val (c21,ty21) = tcTerm(e2,None,ctx)
+    	eval.eval(ty1) match {
+        case Bool => {
+          if( eval.eval(ty1).equals(True)) {
+            (IfThenElse(c1,e1,e2),ty11)
+          } else {
+            (IfThenElse(c1,e1,e2),ty21)
+          }
+        }
+        case _       => {
+          throw new ExpectedBool(c1,ty1,toNames(ctx))
+        }
+    	}    
     }
     //End of SAN additions
     case (t,None) => throw new RequiresAnnotation(t,toNames(ctx))

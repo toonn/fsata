@@ -35,17 +35,20 @@ class DepTest extends FunSuite with ShouldMatchers {
 	}
 		
 	// basic calculus
+		//test 1
 	evaluateAndTypeTest("Set", calc.mkSet, calc.mkSet)
 	evaluateAndTypeTest("""(\A : Set. Set) Set""", calc.mkSet, calc.mkSet)
 	
 	// general lambda calculus stuff...
-	evaluateAndTypeTest("Nat", calc.mkSet, calc.mkNat);	//test 3
+	evaluateAndTypeTest("Nat", calc.mkSet, calc.mkNat);	
+		//test 3
 	evaluateAndTypeTest("Bool", calc.mkSet, calc.mkBool);	
 	evaluateAndTypeTest("true", calc.mkBool, calc.mkTrue);	
 	evaluateAndTypeTest("false", calc.mkBool, calc.mkFalse);	
 	evaluateAndTypeTest("0", calc.mkNat, calc.mkZero);	
-	evaluateAndTypeTest("succ 0", calc.mkNat, calc.mkSucc(calc.mkZero));	
-	evaluateAndTypeTest("Set", calc.mkSet, calc.mkSet);	//test 9
+	evaluateAndTypeTest("succ 0", calc.mkNat, calc.mkSucc(calc.mkZero));
+		//test 9
+	evaluateAndTypeTest("Set", calc.mkSet, calc.mkSet);	
 	
 	// t_1 -> t_2 === (_ : t_1) -> t_2
 	evaluateAndTypeTest("""Bool -> Bool""", calc.mkSet, calc.mkPi("_",calc.mkBool, calc.mkBool));

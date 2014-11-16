@@ -37,9 +37,9 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   // naturals
   override def mkNat = Nat
   override def mkZero = Zero
-  override def mkSucc(e: Term) = notImplemented
-  override def mkPred(e: Term) = notImplemented
-  override def mkIsZero(e: Term) = notImplemented
+  override def mkSucc(e: Term) = Succ(e)
+  override def mkPred(e: Term) = Pred(e)
+  override def mkIsZero(e: Term) = IsZero(e)
   override def mkNatInd = notImplemented
   
   // unit type
@@ -52,7 +52,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkFirst(t: Term) : Term = notImplemented
   override def mkSecond(t: Term) : Term = notImplemented
     
-  // singleton types \\SAN: Optional
+  // singleton types //SAN: Optional
   override def mkI = notImplemented
   override def mkRefl = notImplemented
   override def mkSubst = notImplemented
@@ -78,7 +78,6 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
     // or Lam(a, None, Lam(b, None, App( App(a, a), None, b))))
   def orDefinition = """\a . \b . a a b"""
     
-  // TODO
   def boolEqDefinition = """\b1 . \b2 . b1 (b2 tru fls) (b2 tru fls)"""
     
     
