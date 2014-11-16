@@ -65,32 +65,34 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   //	Hence, I'll do only some because I would want to test them first.
   
   //TODO
-  def churchBoolDefinition =  """\b . b true false"""
+  def churchBoolDefinition =  """\b . b tru fls"""
     
     // true Lam(t, None, Lam(f, None, t))
   def truDefinition = """\t . \f . t"""
     // fls Lam(t, None, Lam(f, None, f))
   def flsDefinition = """\t . \f . f"""
     // not Lam(a, None, Lam(t, None, Lam(f, None, App( App(a,f), t))))
-  def notDefinition = """\a . \t . \f . ( (a, f), t )"""
+  def notDefinition = """\a . \t . \f . a f t"""
     // and Lam(a, None, Lam(b, None, App(App(a,b), a))))
-  def andDefinition = """\\a . \b . ( (a, b), a)"""
+  def andDefinition = """\\a . \b . a b a"""
     // or Lam(a, None, Lam(b, None, App( App(a, a), None, b))))
-  def orDefinition = """\a . \b . ( (a , a), b)"""
+  def orDefinition = """\a . \b . a a b"""
     
   // TODO
-  def boolEqDefinition = """TODO"""
+  def boolEqDefinition = """\b1 . \b2 . b1 (b2 tru fls) (b2 tru fls)"""
+    
+    
   // TODO  
   def churchNatDefinition = """TODO"""
     
   // Zero Lam(n, None, Lam (s, None, s)
   def zeDefinition = """\n . \s . s"""
   // Succ	Lam( n, None, Lam(s, None, Lam (z, None, App(s, App(App(n,s),z)))))
-  def suDefinition = """\n . \s . \z . (s, ( (n,s),z))"""
+  def suDefinition = """\n . \s . \z . s (n s z)"""
   // isZero   Lam(n, None, App(App(n,Lam(x, None, false)), true)
-  def isZeroDefinition = """\n . ( (n, \ x . false), true) """
+  def isZeroDefinition = """\n . n ( \ x . fls) tru"""
   //plus	Lam(a, None, Lam(b, None, Lam(c, None,Lam(d, None, App(App(a, c), App(App(b,c),d))))))
-  def plusDefinition = """\a . \b . \c . \d . ( (a,c), ((b,c),d))"""
+  def plusDefinition = """\a . \b . \c . \d . a c (b c d)"""
     
   // If you make the optional exercise to define times using the natInd primitive, do it here...
   def timesDefinition = """TODO"""
