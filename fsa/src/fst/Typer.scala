@@ -26,6 +26,10 @@ case class ExpectedNat(t: Term, ty: Term, names: Names) extends TypeException() 
 case class ExpectedBool(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Bool type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
+//SAN: Added
+case class ExpectedPair(t: Term, ty: Term, names: Names) extends TypeException() {
+  override def errorMessage = "Expected pair type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
+}
 case class ExpectedSigma(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Sigma type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
@@ -164,6 +168,9 @@ class Typer(eval: Evaluator) {
         }
     	}
     }
+    case(NatInd, None) => {
+      (NatInd,Nat)
+    }
     	//Bools
     case(Bool, None) => {
       (Bool,Set)
@@ -191,6 +198,48 @@ class Typer(eval: Evaluator) {
         }
     	}    
     }
+    	//SAN: Sigma types
+    		//TODO: Some mistakes here, tricky
+    case(Sigma(v,a,b), None) => {
+      val (a1, _) = tcTerm(a,Some(Set),ctx) 
+      val (b1, _) = tcTerm(b,Some(Set),(v,a1)::ctx)
+      (Sigma(v,a1,b1),Set)
+    }
+    case(Pair(s,t), None) => {
+      val (s1, _) = tcTerm(s,Some(Set),ctx) 
+      val (t1, _) = tcTerm(t,Some(Set),ctx)
+      (Pair(s1,t1),Set)
+    }
+    case(First(t), None) => {
+       val (t1, ty1) = tcTerm(t,Some(Set),ctx)
+       eval.eval(ty1) match {
+        case Pair(_,_) => {
+          (First(t), ty1)
+        }
+        case _       => {
+          throw new ExpectedPair(t1,ty1,toNames(ctx))
+        }
+       }
+    }
+    case(Second(t), None) => {
+       val (t1, ty1) = tcTerm(t,Some(Set),ctx)
+       eval.eval(ty1) match {
+        case Pair(_,_) => {
+          (Second(t), ty1)
+        }
+        case _       => {
+          throw new ExpectedPair(t1,ty1,toNames(ctx))
+        }
+       }
+    }
+    	//SAN: Bools
+    case(TUnit, None) => {
+      (TUnit,Set)
+    }
+    case(Unit, None) => {
+      (Unit,TUnit)
+    }
+    
     //End of SAN additions
     case (t,None) => throw new RequiresAnnotation(t,toNames(ctx))
     }

@@ -40,17 +40,17 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkSucc(e: Term) = Succ(e)
   override def mkPred(e: Term) = Pred(e)
   override def mkIsZero(e: Term) = IsZero(e)
-  override def mkNatInd = notImplemented
+  override def mkNatInd = NatInd
   
   // unit type
-  override def mkTUnit = notImplemented
-  override def mkUnit = notImplemented
+  override def mkTUnit = TUnit
+  override def mkUnit = Unit
   
   // sigma types
-  override def mkSigma(v: String, a: Term, b: Term) : Term = notImplemented
-  override def mkPair(x: Term, y: Term) : Term = notImplemented
-  override def mkFirst(t: Term) : Term = notImplemented
-  override def mkSecond(t: Term) : Term = notImplemented
+  override def mkSigma(v: String, a: Term, b: Term) : Term = Sigma(v,a,b)
+  override def mkPair(x: Term, y: Term) : Term = Pair(x,y)
+  override def mkFirst(t: Term) : Term = First(t)
+  override def mkSecond(t: Term) : Term = Second(t)
     
   // singleton types //SAN: Optional
   override def mkI = notImplemented

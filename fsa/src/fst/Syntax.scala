@@ -128,6 +128,10 @@ object Syntax {
 		override def prettyPrint(names: Names) = 
 		  "isZero " + e.prettyPrint(names)  
 	}
+	case object NatInd extends Term {
+	  	override def prettyPrint(names: Names) = 
+		"natInd "
+	}
 		//SAN: the bools
 	case object Bool extends Term {
 	  override def prettyPrint(names: Names) = "Bool"
@@ -141,8 +145,31 @@ object Syntax {
 	case class IfThenElse(c: Term, e1: Term, e2: Term) extends Term {
 		override def prettyPrint(names: Names) = 
 		  "if " + c.prettyPrint(names) + " then " + e1.prettyPrint(names) + " else " + e2.prettyPrint(names)				  
-	}	
-
+	}
+		//SAN: Sigma types
+	case class Sigma(v: String, a: Term, b: Term) extends Term {
+		override def prettyPrint(names: Names) = 
+		  "Sigma[ " + v + " : " + a.prettyPrint(names) + " ] " + b.prettyPrint(names)				  
+	}
+	case class Pair(s: Term, t: Term) extends Term {
+		override def prettyPrint(names: Names) = 
+		  "(" + s.prettyPrint(names) + "," + t.prettyPrint(names) + ")"			  
+	}
+	case class First(t: Term) extends Term {
+		override def prettyPrint(names: Names) = 
+		  "fst" + t.prettyPrint(names)	  
+	}
+	case class Second(t: Term) extends Term {
+		override def prettyPrint(names: Names) = 
+		  "snd" + t.prettyPrint(names)	  
+	}
+		//SAN: Unit type
+	case object TUnit extends Term {
+	  override def prettyPrint(names: Names) = "Unit"
+	}
+	case object Unit extends Term {
+	  override def prettyPrint(names: Names) = "unit"
+	}
 	
 	//SAN: Todo implement
 	case object Let extends Term{
