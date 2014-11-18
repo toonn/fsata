@@ -3,16 +3,90 @@ package fst
 import Syntax._
 
 class Evaluator {
-  
-	//TODO: add other cases
+	
+	//SAN TODO (*INCOMPLETE*)
+	//	we could skip the terms that don't have anything to shift.
 	def shift(t:Term, d:Int, c:Int): Term = t match {
 	  case Var(i) => if (i<c) Var(i) else Var(i+d)
+	  
+	  //SAN: Regular syntax
+	  case Lam(name, ty, t1) => Lam(name, ty, shift(t1, d, c+1))
+      case App(t1, t2) =>  App(shift(t1, d, c), shift(t2, d, c))  
+      
+      //SAN: Added special syntax
+      case Let(name, t1, t2, t3) => Let(name, shift(t1, d, c),shift(t2, d, c), shift(t3,d,c))
+      case TArr(t1,t2) => TArr(shift(t1, d, c),shift(t2, d, c))
+      case Pi(name,t1,t2) => Pi(name,shift(t1, d, c),shift(t2, d, c))
+      case Set => Set
+      case Ann(t1,t2) => Ann(shift(t1, d, c),shift(t2, d, c))
+      
+	  //SAN: Bools
+      case Bool => Bool
+      case True => True 
+      case False => False
+      case IfThenElse(t1, t2, t3) => IfThenElse(shift(t1, d, c), shift(t2, d, c), shift(t3, d, c)) 
+
+	  //SAN: Nats
+	  case Nat => Nat
+	  case Zero => Zero
+      case Succ(t1) => Succ(shift(t1, d, c))
+      case Pred(t1) => Pred(shift(t1, d, c))
+      case IsZero(t1) => IsZero(shift(t1, d, c))
+      case NatInd => NatInd
+      
+      //SAN: Unit
+      case TUnit => TUnit
+      case Unit => Unit
+      
+      //SAN: Sigma types
+      case Sigma(name,t1,t2) => Sigma(name,shift(t1,d,c), shift(t2,d,c))
+      case Pair(t1,t2) => Pair(shift(t1, d, c),shift(t2, d, c))
+      case First(t1) => First(shift(t1, d, c))
+      case Second(t1) => Second(shift(t1, d, c))
+      
 	  case _      => t
 	}
 
-	//TODO: add other cases
+	//SAN TODO: add other cases (*incomplete*)
+	//	we could skip the terms that don't have anything to subst.
 	def subst(t:Term, v:Int, s:Term) : Term = t match {
 	  case Var(i) => if (i==v) s else Var(i)
+	  
+	   //SAN: Regular syntax
+	  case Lam(name, ty, t1) => Lam(name, ty, subst(t1, v+1, shift(s,1,0)))
+      case App(t1, t2) =>  App(subst(t1, v, s), subst(t2, v, s))  
+      
+      //SAN: Added special syntax
+      case Let(name, t1, t2, t3) => Let(name, subst(t1, v, s),subst(t2, v, s), subst(t3,v,s))
+      case TArr(t1,t2) => TArr(subst(t1, v, s),subst(t2, v, s))
+      case Pi(name,t1,t2) => Pi(name,subst(t1, v, s),subst(t2, v, s))
+      case Set => Set
+      case Ann(t1,t2) => Ann(subst(t1, v, s),subst(t2, v, s))
+      
+	  //SAN: Bools
+      case Bool => Bool
+      case True => True 
+      case False => False
+      case IfThenElse(t1, t2, t3) => IfThenElse(subst(t1, v, s), subst(t2, v, s), subst(t3, v, s)) 
+
+	  //SAN: Nats
+	  case Nat => Nat
+	  case Zero => Zero
+      case Succ(t1) => Succ(subst(t1, v, s))
+      case Pred(t1) => Pred(subst(t1, v, s))
+      case IsZero(t1) => IsZero(subst(t1, v, s))
+      case NatInd => NatInd
+      
+      //SAN: Unit
+      case TUnit => TUnit
+      case Unit => Unit
+      
+      //SAN: Sigma types
+      case Sigma(name,t1,t2) => Sigma(name,subst(t1,v,s), subst(t2,v,s))
+      case Pair(t1,t2) => Pair(subst(t1, v, s),subst(t2, v, s))
+      case First(t1) => First(subst(t1, v, s))
+      case Second(t1) => Second(subst(t1, v, s))
+      
 	  case _      => t
 	}
 	

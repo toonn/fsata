@@ -28,8 +28,13 @@ case class ExpectedBool(t: Term, ty: Term, names: Names) extends TypeException()
 }
 //SAN: Added
 case class ExpectedPair(t: Term, ty: Term, names: Names) extends TypeException() {
-  override def errorMessage = "Expected pair type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
+  override def errorMessage = "Expected Pair type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
+//SAN: Added
+case class ExpectedSet(t: Term, ty: Term, names: Names) extends TypeException() {
+  override def errorMessage = "Expected Set type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
+}
+
 case class ExpectedSigma(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Sigma type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
@@ -238,6 +243,30 @@ class Typer(eval: Evaluator) {
     }
     case(Unit, None) => {
       (Unit,TUnit)
+    }
+        //SAN: Let expression (*INCOMPLETE*)
+    case(Let(v: String, ty: Term, vi: Term, t: Term), None) => {
+    	val (ty1,ty_ty) = tcTerm(ty,None,ctx)
+    	val (vi1,vi_ty) = tcTerm(vi,None,ctx)
+    	val (t1,t_ty) = tcTerm(t,None,ctx)
+    	eval.eval(ty_ty) match {
+        case Set => {
+          if(eval.eval(vi_ty).equals(ty_ty)) {
+            (Let(v,ty_ty,vi_ty,t_ty), Set)
+          } else {
+        	  throw new UnequalTerms(ty_ty,vi_ty,toNames(ctx))          
+          }
+        }
+        case _       => {
+          throw new ExpectedSet(ty,ty_ty,toNames(ctx))
+        }
+    	}    
+    }
+    	//SAN: TArr, (*INCOMPLETE*)
+    case(TArr(t1 : Term, t2 : Term), None) => {
+        val (tt1,tty1) = tcTerm(t1,None,ctx)
+    	val (tt2,tty2) = tcTerm(t2,None,ctx)
+    	(TArr(t1,t2),Set)
     }
     
     //End of SAN additions

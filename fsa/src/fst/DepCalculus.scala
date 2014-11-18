@@ -20,9 +20,10 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkAbs(v: String, ty: Option[Term], t: Term) = Lam(v,ty,t)
   override def mkApp(f : Term, a : Term) = App(f,a)
   
-  override def mkLet(v: String, ty: Term, vi: Term, t: Term) : Term = notImplemented
+  override def mkLet(v: String, ty: Term, vi: Term, t: Term) : Term = Let(v,ty,vi,t)
 
-  override def mkTArr(t1 : Term, t2: Term) = notImplemented
+  	//SAN: I think this ( t1 -> t2 ), unsure. 
+  override def mkTArr(t1 : Term, t2: Term) = TArr(t1,t2)
   override def mkPi(v: String, t1: Term, t2: Term) = Pi(v, t1, t2)
   override def mkSet = Set
   

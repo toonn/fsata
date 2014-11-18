@@ -171,9 +171,17 @@ object Syntax {
 	  override def prettyPrint(names: Names) = "unit"
 	}
 	
-	//SAN: Todo implement
-	case object Let extends Term{
-	  	  override def prettyPrint(names: Names) = "notImplemented"
+	//SAN: Let
+	case class Let(v: String, ty: Term, vi: Term, t: Term) extends Term{
+		override def prettyPrint(names: Names) = 
+		  "let" + v + " : " + ty.prettyPrint(names) + " = " + 
+				  vi.prettyPrint(names) + " in " + t.prettyPrint(names)
+	}
+	
+	//SAN: TArr
+	case class TArr(t1: Term, t2: Term) extends Term{
+		override def prettyPrint(names: Names) = 
+		  "(" + t1.prettyPrint(names) + " -> " + t2.prettyPrint(names) + " )"
 	}
 
 		
