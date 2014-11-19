@@ -1,12 +1,14 @@
 package fst
 
 import Syntax._
+import java.util.NoSuchElementException
 
 class Evaluator {
 	
 	//SAN TODO (*INCOMPLETE*)
 	//	we could skip the terms that don't have anything to shift.
 	def shift(t:Term, d:Int, c:Int): Term = t match {
+
 	  case Var(i) => if (i<c) Var(i) else Var(i+d)
 	  
 	  //SAN: Regular syntax
@@ -104,6 +106,8 @@ class Evaluator {
     
     //TODO: add other cases
 	def eval1[R](t:Term): Option[Term] = {
+	  //SAN: I added the nosuchelementexception try/catch
+	  try{
 	  t match {
 		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
 		  
@@ -143,8 +147,13 @@ class Evaluator {
 		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let
 		  
 		  		//SAN NatInd TODO
+		  
+		  		//SAN todo subst
 
 		  case _ => None
+	  }
+	  } catch{
+	    case e : NoSuchElementException => None
 	  }
 	}
 	
