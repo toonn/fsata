@@ -192,7 +192,7 @@ class Typer(eval: Evaluator) {
     	val (c21,ty21) = tcTerm(e2,None,ctx)
     	eval.eval(ty1) match {
         case Bool => {
-          if( eval.eval(ty1).equals(True)) {
+          if(eval.eval(ty1).equals(True)) {
             (IfThenElse(c1,e1,e2),ty11)
           } else {
             (IfThenElse(c1,e1,e2),ty21)

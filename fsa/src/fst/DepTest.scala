@@ -57,7 +57,8 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest("""(A : Set) -> Bool -> A""", calc.mkSet, calc.mkPi("A", calc.mkSet, calc.mkPi("_",calc.mkBool, calc.mkVar(1))));
 	
 	// alpha-equivalence
-    evaluateAndTypeTest("""(x:Nat) -> Nat""", calc.mkSet, calc.mkPi("y",calc.mkNat,calc.mkNat)); //test 13
+		//test 13
+    evaluateAndTypeTest("""(x:Nat) -> Nat""", calc.mkSet, calc.mkPi("y",calc.mkNat,calc.mkNat)); 
 		//test 14
     evaluateAndTypeTest("""\A:Set.A""",calc.mkPi("B",calc.mkSet,calc.mkSet), calc.mkAbs("B",Some(calc.mkSet),calc.mkVar(0)));
 	

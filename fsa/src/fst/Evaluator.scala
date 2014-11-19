@@ -105,7 +105,35 @@ class Evaluator {
     //TODO: add other cases
 	def eval1[R](t:Term): Option[Term] = {
 	  t match {
-		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))
+		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
+		  
+				  //SAN Basic E-rules
+		  
+				  //SAN  Bools
+		  case IfThenElse(True,t2,t3) => Some(t2) //E-IfTrue
+		  case IfThenElse(False,t2,t3) => Some(t3)	//E-IfFalse
+		  //TODO E-If1
+		  //TODO E-If2
+		  //TODO E-If3
+		  
+		  		//SAN Nats
+		  //TODO E-succ
+		  case Pred(Zero) => Some(Zero) //E-PredZero
+		  case Pred(Succ(t)) => Some(t)	//E-PredSucc
+		  //TODO E-Pred
+		  case IsZero(Zero) => Some(True)	//E-IsZeroZero
+		  case IsZero(Succ(t)) => Some(False)	// E-IsZeroSucc
+		  //TODO E-IsZero
+		  
+		  		//SAN Sigma types
+		  case First(Pair(s,t)) => Some(s)	//E-Fst
+		  case Second(Pair(s,t)) => Some(t)	//E-Snd
+		  
+		  		//SAN Let
+		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let
+		  
+		  		//SAN NatInd TODO
+
 		  case _ => None
 	  }
 	}
