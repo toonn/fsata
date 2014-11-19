@@ -269,6 +269,18 @@ class Typer(eval: Evaluator) {
     	(TArr(t1,t2),Set)
     }
     
+    	//SAN: Identity types (*INCOMPLETE*)
+    case(I, None) => {
+      (I,Set)
+    }
+    case(Refl, None) => { 
+      (Refl, Set)
+    }
+    case(Subst, None) => {
+       (Subst, Set)
+    }
+      	
+    
     //End of SAN additions
     case (t,None) => throw new RequiresAnnotation(t,toNames(ctx))
     }

@@ -54,9 +54,9 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkSecond(t: Term) : Term = Second(t)
     
   // singleton types //SAN: Optional
-  override def mkI = notImplemented
-  override def mkRefl = notImplemented
-  override def mkSubst = notImplemented
+  override def mkI = I
+  override def mkRefl = Refl
+  override def mkSubst = Subst
   
   // dependent if //SAN: Optional
   override def mkBoolElim = notImplemented
@@ -66,7 +66,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   //	Hence, I'll do only some because I would want to test them first.
   
   //TODO
-  def churchBoolDefinition =  """\b . b tru fls"""
+  def churchBoolDefinition =  """A -> A -> A"""
     
     // true Lam(t, None, Lam(f, None, t))
   def truDefinition = """\t . \f . t"""
@@ -83,7 +83,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
     
     
   // TODO  
-  def churchNatDefinition = """TODO"""
+  def churchNatDefinition = """A -> A -> A"""
     
   // Zero Lam(n, None, Lam (s, None, s)
   def zeDefinition = """\n . \s . s"""

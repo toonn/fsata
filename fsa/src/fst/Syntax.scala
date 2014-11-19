@@ -183,6 +183,15 @@ object Syntax {
 		override def prettyPrint(names: Names) = 
 		  "(" + t1.prettyPrint(names) + " -> " + t2.prettyPrint(names) + " )"
 	}
-
-		
+	
+	//SAN Identiry types
+	case object I extends Term {
+	  override def prettyPrint(names: Names) = "I"
+	}
+	case object Refl extends Term {
+	  override def prettyPrint(names: Names) = "refl"
+	}
+	case object Subst extends Term {
+	  override def prettyPrint(names: Names) = "subst"
+	}	
 }
