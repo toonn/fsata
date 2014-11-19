@@ -65,6 +65,8 @@ class Typer(eval: Evaluator) {
     (eval.eval(t1),eval.eval(t2)) match {
       case (t1,t2) if t1 == t2 => true
       // TODO: add more cases here
+    		  //SAN Addition
+      case (t1,t2) if  eval.eval(t1) == eval.eval(t2) => true
       case (t1,t2) => false
     }      
   }

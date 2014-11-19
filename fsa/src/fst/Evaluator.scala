@@ -108,22 +108,32 @@ class Evaluator {
 		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
 		  
 				  //SAN Basic E-rules
-		  
-				  //SAN  Bools
+		  case Lam(x,t1,t2) if eval1(t2) != None => Some(Lam(x,t1,eval(t2))) //E-Abs1
+		  case Lam(x,t1,t2) if eval1(t1.get) != None 
+		  				=> Some(Lam(x,eval1(t1.get),t2)) //E-Abs2
+		  case Pi(v, t1, t2) if eval1(t2) != None => Some(Pi(v,t1,eval(t2))) //E-Pi1
+		  case Pi(v, t1, t2) if eval1(t1) != None => Some(Pi(v,eval(t1),t2)) //E-Pi2
+		  case App(t1,t2) if eval1(t2) != None => Some(App(t1,eval(t2))) //E-App1
+		  case App(t1,t2) if eval1(t1) != None => Some(App(eval(t1),t2)) //E-Abs2
+		 
+		  		  //SAN  Bools
 		  case IfThenElse(True,t2,t3) => Some(t2) //E-IfTrue
 		  case IfThenElse(False,t2,t3) => Some(t3)	//E-IfFalse
-		  //TODO E-If1
-		  //TODO E-If2
-		  //TODO E-If3
+		  case IfThenElse(t1,t2,t3) if eval1(t1) != None 
+		  			=> Some(IfThenElse(eval1(t1).get,t2,t3))//E-If1
+		  case IfThenElse(t1,t2,t3) if eval1(t2) != None 
+		  			=> Some(IfThenElse(t1,eval1(t2).get,t3))//TODO E-If2
+		  case IfThenElse(t1,t2,t3) if eval1(t3) != None 
+		  			=> Some(IfThenElse(t1,t2,eval1(t3).get))//TODO E-If3
 		  
 		  		//SAN Nats
-		  //TODO E-succ
+		  case Succ(t) if eval(t) != None => Some(Succ(eval1(t).get)) // E-succ
 		  case Pred(Zero) => Some(Zero) //E-PredZero
 		  case Pred(Succ(t)) => Some(t)	//E-PredSucc
-		  //TODO E-Pred
+		  case Pred(t) if eval(t) != None => Some(Pred(eval1(t).get))// E-Pred
 		  case IsZero(Zero) => Some(True)	//E-IsZeroZero
 		  case IsZero(Succ(t)) => Some(False)	// E-IsZeroSucc
-		  //TODO E-IsZero
+		  case IsZero(t) if eval(t) != None => Some(IsZero(eval1(t).get))// E-IsZero
 		  
 		  		//SAN Sigma types
 		  case First(Pair(s,t)) => Some(s)	//E-Fst

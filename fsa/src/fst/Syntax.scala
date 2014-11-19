@@ -184,7 +184,7 @@ object Syntax {
 		  "(" + t1.prettyPrint(names) + " -> " + t2.prettyPrint(names) + " )"
 	}
 	
-	//SAN Identiry types
+	//SAN Identity types
 	case object I extends Term {
 	  override def prettyPrint(names: Names) = "I"
 	}
