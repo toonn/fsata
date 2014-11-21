@@ -1,0 +1,42 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage{amsmath}
+
+\begin{document}
+\section{Base calculus (3.3.1)}
+
+\begin{equation}
+    \tag{\textsc{T-Var}}
+    \frac{x : t \in \Gamma}
+         {\Gamma \vdash x \Uparrow t}
+\end{equation}
+
+\begin{equation}
+    \tag{\textsc{T-Abs}}
+    \frac{\Gamma \vdash t_1 \Downarrow Set \quad
+            \Gamma,x \Downarrow t_1 \vdash t_2 \Uparrow t_3}
+            {\Gamma \vdash \lambda x : t_1 . t_2
+                \Uparrow (x : t_1) \to t_3 }
+\end{equation}
+
+\begin{equation}
+    \tag{\textsc{T-Pi}}
+    \frac{\Gamma \vdash t_1 \Downarrow Set \quad
+          \Gamma,x \Downarrow t_1 \vdash t_2 \Downarrow Set}
+    {\Gamma \vdash (x : t_1) \to t_2 \Uparrow Set}
+\end{equation}
+
+\begin{equation}
+    \tag{\textsc{T-App}}
+    \frac{\Gamma \vdash t_1 \Uparrow t_3 \quad
+          t_3 \to^* ((x : t_4) \to t_5) \quad
+          \Gamma \vdash t_2 \Downarrow t_4}
+         {\Gamma \vdash t_1 \ t_2 \Uparrow t_5[x \mapsto t_2]}
+\end{equation}
+
+\begin{equation}
+    \tag{\textsc{T-SetInSet}}
+    \frac{}{\Gamma \vdash Set \Uparrow Set}
+\end{equation}
+
+\section{Sigma types (4.2)}
+\end{document}
