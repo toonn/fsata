@@ -23,7 +23,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkLet(v: String, ty: Term, vi: Term, t: Term) : Term = Let(v,ty,vi,t)
 
   	//SAN: I think this ( t1 -> t2 ), unsure. 
-  override def mkTArr(t1 : Term, t2: Term) = TArr(t1,t2)
+  override def mkTArr(t1 : Term, t2: Term) = mkPi("_",t1,t2)
   override def mkPi(v: String, t1: Term, t2: Term) = Pi(v, t1, t2)
   override def mkSet = Set
   

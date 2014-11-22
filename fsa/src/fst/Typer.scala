@@ -66,7 +66,7 @@ class Typer(eval: Evaluator) {
       case (t1,t2) if t1 == t2 => true
       // TODO: add more cases here
     		  //SAN Addition
-      case (t1,t2) if  eval.eval(t1) == eval.eval(t2) => true
+      case (t1,t2) if  eval.eval(t1) == eval.eval(t2) => true // T: Dit is toch niet nodig? We zijn al aan het matchen op eval(t1) en eval(t2).
       case (t1,t2) => false
     }      
   }
@@ -115,9 +115,11 @@ class Typer(eval: Evaluator) {
     }
     	// SAN: Type checking for dependent function
     case (Pi(name,a,b),None) => {
+      val uname = if (name == "_") { uniqueName(name, toNames(ctx))}
+      				else {name}
       val (a1, _) = tcTerm(a,Some(Set),ctx) //SAN: a1 has to be a type
-      val (b1, _) = tcTerm(b,Some(Set),(name,a1)::ctx) //SAN: b1 has to be a type with (x:a1) added to the context
-      (Pi(name,a1,b1),Set)
+      val (b1, _) = tcTerm(b,Some(Set),(uname,a1)::ctx) //SAN: b1 has to be a type with (x:a1) added to the context
+      (Pi(uname,a1,b1),Set)
     }
     	// SAN: Type checking for Set
     case (Set,None) => {
@@ -128,7 +130,7 @@ class Typer(eval: Evaluator) {
     }
     case (t,Some(a)) => {
       val (t1:Term, a1) = tcTerm(t,None,ctx)
-      if (!equalTerms(a,a1,ctx)) throw new UnequalTerms(a,a1,toNames(ctx))
+      if (!equalTerms(a,a1,ctx)) throw new UnequalTerms(t,t1,toNames(ctx))
       (t1,a1)
     }
     

@@ -3,7 +3,7 @@ package fst
 import scala.xml.PrettyPrinter
 /**
  * 
- * @author Akkermans Sven and Nolten Toon
+ * @author Akkermans Sven and Toon Nolten
  */
 object Syntax {
 
@@ -99,6 +99,7 @@ object Syntax {
 	
 	// Practical matters
 	case class Ann(a : Term, t : Term) extends Term { 
+	  override def atomic = false
 	  override def prettyPrint(names: Names) = "(" + t.prettyPrint(names) + " : " + a.prettyPrint(names) + ")"
 	}
 	
@@ -117,19 +118,23 @@ object Syntax {
 	  override def prettyPrint(names: Names) = "0"
 	}
 	case class Succ(e: Term) extends Term {
-		override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		  "succ " + e.prettyPrint(names)  
 	}
 	case class Pred(e: Term) extends Term {
-		override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		  "pred " + e.prettyPrint(names)  
 	}
 	case class IsZero(e: Term) extends Term {
-		override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		  "isZero " + e.prettyPrint(names)  
 	}
 	case object NatInd extends Term {
-	  	override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		"natInd "
 	}
 		//SAN: the bools
@@ -143,25 +148,32 @@ object Syntax {
 	  override def prettyPrint(names: Names) = "false"
 	}
 	case class IfThenElse(c: Term, e1: Term, e2: Term) extends Term {
-		override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		  "if " + c.prettyPrint(names) + " then " + e1.prettyPrint(names) + " else " + e2.prettyPrint(names)				  
 	}
 		//SAN: Sigma types
 	case class Sigma(v: String, a: Term, b: Term) extends Term {
-		override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		  "Sigma[ " + v + " : " + a.prettyPrint(names) + " ] " + b.prettyPrint(names)				  
 	}
 	case class Pair(s: Term, t: Term) extends Term {
-		override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		  "(" + s.prettyPrint(names) + "," + t.prettyPrint(names) + ")"			  
 	}
 	case class First(t: Term) extends Term {
-		override def prettyPrint(names: Names) = 
-		  "fst" + t.prettyPrint(names)	  
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = t match {
+	    case Pair(a, b) => "fst" + a.prettyPrint(names)
+	  }	  
 	}
 	case class Second(t: Term) extends Term {
-		override def prettyPrint(names: Names) = 
-		  "snd" + t.prettyPrint(names)	  
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = t match {
+	    case Pair(a, b) => "snd" + b.prettyPrint(names)
+	  }
 	}
 		//SAN: Unit type
 	case object TUnit extends Term {
@@ -173,14 +185,16 @@ object Syntax {
 	
 	//SAN: Let
 	case class Let(v: String, ty: Term, vi: Term, t: Term) extends Term{
-		override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		  "let" + v + " : " + ty.prettyPrint(names) + " = " + 
 				  vi.prettyPrint(names) + " in " + t.prettyPrint(names)
 	}
 	
 	//SAN: TArr
 	case class TArr(t1: Term, t2: Term) extends Term{
-		override def prettyPrint(names: Names) = 
+	  override def atomic = false
+	  override def prettyPrint(names: Names) = 
 		  "(" + t1.prettyPrint(names) + " -> " + t2.prettyPrint(names) + " )"
 	}
 	

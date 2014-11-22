@@ -20,6 +20,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	def evaluateAndTypeTest(in:String, ty: Term, out: Term) = {
 		test("type and evaluate expression " + i) {
 			val e : Term = parser.parseTerm(in);
+			println(e);
 			if(ty != null) {
 			    val ty1 = typer.typeOf(e,Nil)
 				if(typer.equalTerms(ty,ty1,List())) {
