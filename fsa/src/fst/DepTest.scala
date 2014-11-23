@@ -18,22 +18,25 @@ class DepTest extends FunSuite with ShouldMatchers {
 	var i = 1;
 
 	def evaluateAndTypeTest(in:String, ty: Term, out: Term) = {
-		test("type and evaluate expression " + i) {
-			val e : Term = parser.parseTerm(in);
-			println(e);
-			if(ty != null) {
-			    val ty1 = typer.typeOf(e,Nil)
-				if(typer.equalTerms(ty,ty1,List())) {
-				  if(out != null) { typer.equalTerms(e,out,List()) };
-				} else {
-				  ty1 should be ===ty
-				}
-			} else { 
-				evaluating {typer.typeOf(e,Nil)} should produce [TypeException];
-			}
-		}
-		i = i + 1
-	}
+        test("type and evaluate expression " + i) {
+            System.out.print("Parsing expression: " + in)
+            val e : Term = parser.parseTerm(in);
+            System.out.println(" (OK)")
+            if(ty != null) {
+                System.out.print("Checking that " + e + " has type " + ty)
+                val (t1, ty1) = typer.tcTerm(e,Some(ty),Nil)
+                System.out.println(" (OK)")
+                if(out != null) { 
+                  System.out.print("Checking if " + eval.eval(t1).prettyPrint() + " is equal to " + out.prettyPrint())
+                  typer.equalTerms(t1,out,Nil) should be ===true 
+                  System.out.println(" (OK)")
+                }
+            } else { 
+                evaluating {typer.typeOf(e,Nil)} should produce [TypeException];
+            }
+        }
+        i = i + 1
+    }
 		
 	// basic calculus
 		//test 1
