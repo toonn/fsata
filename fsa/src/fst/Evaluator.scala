@@ -12,13 +12,13 @@ class Evaluator {
 	  case Var(i) => if (i<c) Var(i) else Var(i+d)
 	  
 	  //SAN: Regular syntax
-	  case Lam(name, ty, t1) => Lam(name, ty, shift(t1, d, c+1))
+	  case Lam(name, ty, t) => Lam(name, ty, shift(t, d, c+1))
       case App(t1, t2) =>  App(shift(t1, d, c), shift(t2, d, c))  
       
       //SAN: Added special syntax
-      case Let(name, t1, t2, t3) => Let(name, shift(t1, d, c),shift(t2, d, c), shift(t3,d,c))
+      case Let(name, ty, t, b) => Let(name, ty,t, shift(b,d,c+1))
       case TArr(t1,t2) => TArr(shift(t1, d, c),shift(t2, d, c))
-      case Pi(name,t1,t2) => Pi(name,shift(t1, d, c),shift(t2, d, c))
+      case Pi(name,t1,t2) => Pi(name,t1,shift(t2, d, c+1))
       case Set => Set
       case Ann(t1,t2) => Ann(shift(t1, d, c),shift(t2, d, c))
       
@@ -59,9 +59,10 @@ class Evaluator {
       case App(t1, t2) =>  App(subst(t1, v, s), subst(t2, v, s))  
       
       //SAN: Added special syntax
-      case Let(name, t1, t2, t3) => Let(name, subst(t1, v, s),subst(t2, v, s), subst(t3,v,s))
+      case Let(name, t1, t2, t3) => Let(name, subst(t1, v, s),subst(t2, v, s),
+    		  							subst(t3,v+1,shift(s,1,0)))
       case TArr(t1,t2) => TArr(subst(t1, v, s),subst(t2, v, s))
-      case Pi(name,t1,t2) => Pi(name,subst(t1, v, s),subst(t2, v, s))
+      case Pi(name,t1,t2) => Pi(name,subst(t1, v, s),subst(t2, v+1, shift(s,1,0)))
       case Set => Set
       case Ann(t1,t2) => Ann(subst(t1, v, s),subst(t2, v, s))
       

@@ -163,6 +163,8 @@ object Syntax {
 	  override def prettyPrint(names: Names) = 
 		  "(" + s.prettyPrint(names) + "," + t.prettyPrint(names) + ")"			  
 	}
+	
+	// TODO, T: check
 	case class First(t: Term) extends Term {
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = t match {
