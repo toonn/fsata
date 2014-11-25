@@ -21,7 +21,7 @@ class DepTest extends FunSuite with ShouldMatchers {
         test("type and evaluate expression " + i) {
             System.out.print("Parsing expression: " + in)
             val e : Term = parser.parseTerm(in);
-            println(" " + e)
+            println(" ### " + e)
             System.out.println(" (OK)")
             if(ty != null) {
                 System.out.print("Checking that " + e + " has type " + ty)

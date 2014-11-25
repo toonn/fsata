@@ -65,7 +65,6 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   //SAN: Added a couple of possible solution templates but I'm unsure of the correct implementation in Scala. No examples...
   //	Hence, I'll do only some because I would want to test them first.
   
-  //TODO
   def churchBoolDefinition =  """A -> A -> A"""
     
     // true Lam(t, None, Lam(f, None, t))

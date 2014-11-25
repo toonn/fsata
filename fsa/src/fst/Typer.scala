@@ -62,12 +62,20 @@ class Typer(eval: Evaluator) {
   //SAN: This function is incomplete and just checks if two terms have the same syntax.
   //	Add an evaluator to the language and use it in the implementation of this function.
   def equalTerms(t1: Term, t2: Term, ctx: Context): Boolean = {
+    val nctx = shiftContext(ctx, 1, 0)
     (eval.eval(t1),eval.eval(t2)) match {
-      case (t1,t2) if t1 == t2 => true
+      case (et1,et2) if et1 == et2 => true
       // TODO: add more cases here
     		  //SAN Addition
-      case (t1,t2) if  eval.eval(t1) == eval.eval(t2) => true // T: Dit is toch niet nodig? We zijn al aan het matchen op eval(t1) en eval(t2).
-      case (t1,t2) => false
+      case (Lam(_, None, t1),Lam(_, None, t2))
+      	if equalTerms(t1, t2, nctx) => true
+      case (Lam(_, Some(ty1), t1),Lam(_, Some(ty2), t2))
+      	if equalTerms(ty1, ty2, nctx) & equalTerms(t1, t2, nctx) => true
+      	
+      case (Pi(_, ty1, ty2), Pi(_, ty3, ty4))
+      	if equalTerms(ty1, ty3, nctx) & equalTerms(ty2, ty4, nctx) => true
+      	
+      case (et1,et2) => false
     }      
   }
   
@@ -252,18 +260,18 @@ class Typer(eval: Evaluator) {
     case(Let(v: String, ty: Term, vi: Term, t: Term), None) => {
     	val (ty1,ty_ty) = tcTerm(ty,None,ctx)
     	val (vi1,vi_ty) = tcTerm(vi,None,ctx)
-    	val (t1,t_ty) = tcTerm(t,None,ctx)
+    	val (t1,t_ty) = tcTerm(t,None,(v,ty)::ctx)
     	eval.eval(ty_ty) match {
-        case Set => {
-          if(eval.eval(vi_ty).equals(ty_ty)) {
-            (Let(v,ty_ty,vi_ty,t_ty), Set)
-          } else {
-        	  throw new UnequalTerms(ty_ty,vi_ty,toNames(ctx))          
-          }
-        }
-        case _       => {
-          throw new ExpectedSet(ty,ty_ty,toNames(ctx))
-        }
+        	case Set => {
+        		if(equalTerms(vi_ty, ty, ctx)) {
+        			(Let(v,ty1,vi1,t1), t_ty)
+        		} else {
+        			throw new UnequalTerms(ty,vi_ty,toNames(ctx))          
+        		}
+        	}
+        	case _       => {
+        		throw new ExpectedSet(ty,ty_ty,toNames(ctx))
+        	}
     	}    
     }
     	//SAN: TArr, (*INCOMPLETE*)
