@@ -82,10 +82,10 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
     
     
   // TODO  
-  def churchNatDefinition = """A -> A -> A"""
+  def churchNatDefinition = """(A -> A) -> A -> A"""
     
   // Zero Lam(n, None, Lam (s, None, s)
-  def zeDefinition = """\n . \s . s"""
+  def zeDefinition = """\s . \z . z"""
   // Succ	Lam( n, None, Lam(s, None, Lam (z, None, App(s, App(App(n,s),z)))))
   def suDefinition = """\n . \s . \z . s (n s z)"""
   // isZero   Lam(n, None, App(App(n,Lam(x, None, false)), true)
