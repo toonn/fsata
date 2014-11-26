@@ -148,6 +148,7 @@ class Evaluator {
 		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let
 		  
 		  		//SAN NatInd TODO
+		  //case NatInd P: Term base: Term step: Term Zero => base
 		  
 		  		//SAN todo subst
 

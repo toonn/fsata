@@ -185,6 +185,7 @@ class Typer(eval: Evaluator) {
         }
     	}
     }
+    	//NatInd : SAN Incomplete, I think
     case(NatInd, None) => {
       (NatInd,Nat)
     }

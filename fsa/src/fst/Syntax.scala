@@ -135,7 +135,7 @@ object Syntax {
 	case object NatInd extends Term {
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = 
-		"natInd "
+		"natInd"
 	}
 		//SAN: the bools
 	case object Bool extends Term {
