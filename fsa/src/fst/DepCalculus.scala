@@ -65,7 +65,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   //SAN: Added a couple of possible solution templates but I'm unsure of the correct implementation in Scala. No examples...
   //	Hence, I'll do only some because I would want to test them first.
   
-  def churchBoolDefinition =  """A -> A -> A"""
+  def churchBoolDefinition =  """A -> A  -> A"""
     
     // true Lam(t, None, Lam(f, None, t))
   def truDefinition = """\t . \f . t"""
@@ -74,7 +74,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
     // not Lam(a, None, Lam(t, None, Lam(f, None, App( App(a,f), t))))
   def notDefinition = """\a . \t . \f . a f t"""
     // and Lam(a, None, Lam(b, None, App(App(a,b), a))))
-  def andDefinition = """\\a . \b . a b a"""
+  def andDefinition = """\a . \b . a b a"""
     // or Lam(a, None, Lam(b, None, App( App(a, a), None, b))))
   def orDefinition = """\a . \b . a a b"""
     
