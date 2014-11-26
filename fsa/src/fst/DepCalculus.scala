@@ -65,29 +65,29 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   //SAN: Added a couple of possible solution templates but I'm unsure of the correct implementation in Scala. No examples...
   //	Hence, I'll do only some because I would want to test them first.
   
-  def churchBoolDefinition =  """A -> A  -> A"""
+  def churchBoolDefinition =  """ (A : Set) -> A -> A  -> A"""
     
     // true Lam(t, None, Lam(f, None, t))
-  def truDefinition = """\t . \f . t"""
+  def truDefinition = """\A. \x . \y . x"""
     // fls Lam(t, None, Lam(f, None, f))
-  def flsDefinition = """\t . \f . f"""
+  def flsDefinition = """\A . \x . \y . y"""
     // not Lam(a, None, Lam(t, None, Lam(f, None, App( App(a,f), t))))
-  def notDefinition = """\a . \t . \f . a f t"""
+  def notDefinition = """\A . \a . \t . \f . a f t"""
     // and Lam(a, None, Lam(b, None, App(App(a,b), a))))
-  def andDefinition = """\a . \b . a b a"""
+  def andDefinition = """\A .\a . \b . a b a"""
     // or Lam(a, None, Lam(b, None, App( App(a, a), None, b))))
-  def orDefinition = """\a . \b . a a b"""
+  def orDefinition = """\A .\a . \b . a a b"""
     
-  def boolEqDefinition = """\b1 . \b2 . b1 (b2 tru fls) (b2 tru fls)"""
+  def boolEqDefinition = """\A .\b1 . \b2 . b1 (b2 tru fls) (b2 tru fls)"""
     
     
   // TODO  
-  def churchNatDefinition = """(A -> A) -> A -> A"""
+  def churchNatDefinition = """(A : Set) -> A -> (A -> A) -> A"""
     
   // Zero Lam(n, None, Lam (s, None, s)
-  def zeDefinition = """\s . \z . z"""
+  def zeDefinition = """\A .\x . \y . x"""
   // Succ	Lam( n, None, Lam(s, None, Lam (z, None, App(s, App(App(n,s),z)))))
-  def suDefinition = """\n . \s . \z . s (n s z)"""
+  def suDefinition = """\n . \A . \x . \y . y (n A x y)"""
   // isZero   Lam(n, None, App(App(n,Lam(x, None, false)), true)
   def isZeroDefinition = """\n . n ( \ x . fls) tru"""
   //plus	Lam(a, None, Lam(b, None, Lam(c, None,Lam(d, None, App(App(a, c), App(App(b,c),d))))))
