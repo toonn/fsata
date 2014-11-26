@@ -114,7 +114,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest("""(\A:Set.\x:A.x) ((A : Set) -> A -> A) (\A:Set.\x:A.x) Nat 0""",calc.mkNat,calc.mkZero);
 	
 	//church encodings
-		//test 43
+		//test 44
 	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
 	                       let tru : bool = """ + calc.truDefinition + """ in
 	                       let fls : bool = """ + calc.flsDefinition + """ in
@@ -147,7 +147,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	                    """, calc.mkBool,calc.mkFalse)
 	
 	// natural induction...
-	     //test 46
+	     //test 47
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 							plus 0 0""",calc.mkNat,calc.mkZero);
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
@@ -157,7 +157,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 						   times 2 2""", calc.mkNat, calc.mkNatLit(4));
 	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
 						   pred2 0""", calc.mkNat, calc.mkZero);
-		//test 50
+		//test 51
 	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
 						   pred2 3""", calc.mkNat, calc.mkNatLit(2));
 	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
@@ -169,14 +169,14 @@ class DepTest extends FunSuite with ShouldMatchers {
 		""", calc.mkNat, calc.mkNatLit(10));
 
 	// dependent if tests
-		//test 53
+		//test 54
 	evaluateAndTypeTest("""let test : (x : Bool) -> if x then Nat else Bool = """ + calc.ifXThenNatElseBoolDefinition + """ in
 	                       test false""", calc.mkBool, null);
 	evaluateAndTypeTest("""let test : (x : Bool) -> if x then Nat else Bool = """ + calc.ifXThenNatElseBoolDefinition + """ in
 	                       test true""", calc.mkNat, null);
 	
 	// sigma types
-		//test 55
+		//test 56
 	evaluateAndTypeTest("""((1,1) : Sigma[ x : Nat ] Nat)""", calc.mkSigma("x", calc.mkNat, calc.mkNat), calc.mkPair(calc.mkNatLit(1),calc.mkNatLit(1)))
 	evaluateAndTypeTest("""Sigma[ x : Nat ] Nat""", calc.mkSet, calc.mkSigma("x", calc.mkNat, calc.mkNat))
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
@@ -189,7 +189,7 @@ class DepTest extends FunSuite with ShouldMatchers {
                         """,calc.mkNat,calc.mkNatLit(6))
                         
     // identity types... 
-         //test 59
+         //test 60
 	evaluateAndTypeTest("""let eqprf2 : I Nat 0 0 = refl Nat 0 in
 			eqprf2""", calc.mkApp(calc.mkApp(calc.mkApp(calc.mkI,calc.mkNat),calc.mkZero),calc.mkZero),
 			calc.mkApp(calc.mkApp(calc.mkRefl,calc.mkNat),calc.mkZero));
@@ -202,7 +202,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 							calc.mkPi("px",calc.mkApp(calc.mkVar(1),calc.mkZero),
 									calc.mkApp(calc.mkVar(2),calc.mkZero)))),
 									null);
-		//test 62
+		//test 63
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 			let eqprf : I Nat 0 (plus 0 0) = refl Nat 0 in
 			let eqprf2 : I Nat 0 0 = refl Nat 0 in
@@ -223,7 +223,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 		""", calc.mkApp(calc.mkApp(calc.mkApp(calc.mkI, calc.mkNat), calc.mkNatLit(6)), calc.mkNatLit(6)), 
 			calc.mkApp(calc.mkApp(calc.mkRefl, calc.mkNat), calc.mkNatLit(6)));
 	// cleaner using cong..
-		//test 64
+		//test 65
 	evaluateAndTypeTest("""
 	    let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 	    let cong : (A : Set) -> (x : A) -> (y : A) -> (B : Set) -> (f : A -> B) -> I A x y -> I B (f x) (f y) =
@@ -239,7 +239,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 			calc.mkApp(calc.mkApp(calc.mkRefl, calc.mkNat), calc.mkNatLit(6)));
 
 	// forall n. n + 0 = n
-	//test 66
+	//test 67
 	evaluateAndTypeTest(
 	    """let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 	       let prop : Nat -> Set = \ n:Nat. I Nat (plus n 0) n in
