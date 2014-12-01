@@ -18,7 +18,7 @@ class Evaluator {
       //SAN: Added special syntax
       case Let(name, ty, t, b) => Let(name, ty,t, shift(b,d,c+1))
       case TArr(t1,t2) => TArr(shift(t1, d, c),shift(t2, d, c))
-      case Pi(name,t1,t2) => Pi(name,t1,shift(t2, d, c+1))
+      case Pi(name,t1,t2) => Pi(name,shift(t1, d, c),shift(t2, d, c+1))
       case Set => Set
       case Ann(t1,t2) => Ann(shift(t1, d, c),shift(t2, d, c))
       

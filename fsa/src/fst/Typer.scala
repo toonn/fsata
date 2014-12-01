@@ -98,9 +98,13 @@ class Typer(eval: Evaluator) {
     }
     	// SAN: Type checking for abstraction (lambda expression) unannoted version (I think)
     	//		Has to check that argument type is of type Set    
-    case (Lam(n1,None,t),Some(Pi(n2,b,c))) => {
-      val (body, _) = tcTerm(t,Some(c),(n1,b)::ctx)
-      (Lam(n1,Some(b),body),Pi(n2,b,c))
+    case (Lam(n1,None,t),Some(ty)) => {
+      eval.eval(ty) match {
+        case Pi(n2,b,c) => 
+        	val (body, _) = tcTerm(t,Some(c),(n1,b)::ctx)
+        	(Lam(n1,Some(b),body),Pi(n2,b,c))
+        case ty1       => throw new ExpectedPi(ty,ty1,toNames(ctx)) //TODO
+      }
     }
         // SAN: Type checking for abstraction (lambda expression) annoted version
     	//		Has to check that argument type is of type Set
@@ -137,6 +141,7 @@ class Typer(eval: Evaluator) {
       tcTerm(t,Some(a),ctx)
     }
     case (t,Some(a)) => {
+      println(t + " -- " + a)
       val (t1:Term, a1) = tcTerm(t,None,ctx)
       if (!equalTerms(a,a1,ctx)) throw new UnequalTerms(t,t1,toNames(ctx))
       (t1,a1)
@@ -258,17 +263,13 @@ class Typer(eval: Evaluator) {
       (Unit,TUnit)
     }
         //SAN: Let expression (*INCOMPLETE*)
-    case(Let(v: String, ty: Term, vi: Term, t: Term), None) => {
+    case(Let(name: String, ty: Term, term : Term, body: Term), None) => {
     	val (ty1,ty_ty) = tcTerm(ty,None,ctx)
-    	val (vi1,vi_ty) = tcTerm(vi,None,ctx)
-    	val (t1,t_ty) = tcTerm(t,None,(v,ty)::ctx)
+    	val (term1,term_ty) = tcTerm(term,Some(ty1),ctx)
+    	val (body1,body_ty) = tcTerm(body,None,(name,ty)::ctx)
     	eval.eval(ty_ty) match {
         	case Set => {
-        		if(equalTerms(vi_ty, ty, ctx)) {
-        			(Let(v,ty1,vi1,t1), t_ty)
-        		} else {
-        			throw new UnequalTerms(ty,vi_ty,toNames(ctx))          
-        		}
+        			(Let(name,ty1,term1,body1), body_ty)
         	}
         	case _       => {
         		throw new ExpectedSet(ty,ty_ty,toNames(ctx))
