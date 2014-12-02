@@ -69,33 +69,33 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   //SAN: Added a couple of possible solution templates but I'm unsure of the correct implementation in Scala. No examples...
   //	Hence, I'll do only some because I would want to test them first.
   
-  def churchBoolDefinition =  """ (A : Set) -> A -> A  -> A"""
+  def churchBoolDefinition =  """(A : Set) -> A -> A  -> A"""
     
     // true Lam(t, None, Lam(f, None, t))
-  def truDefinition = """\A. \x . \y . x"""
+  def truDefinition = """\A . \x . \y . x"""
     // fls Lam(t, None, Lam(f, None, f))
   def flsDefinition = """\A . \x . \y . y"""
     // not Lam(a, None, Lam(t, None, Lam(f, None, App( App(a,f), t))))
-  def notDefinition = """ \a . \A . \t . \f . a f t"""
+  def notDefinition = """ \a . \A . \t . \f . a A f t"""
     // and Lam(a, None, Lam(b, None, App(App(a,b), a))))
-  def andDefinition = """\a . \b . \A . a b a"""
+  def andDefinition = """\a . \b . \A . a ((_ : A) -> (_ : A) -> A) (b A) (a A)"""
     // or Lam(a, None, Lam(b, None, App( App(a, a), None, b))))
-  def orDefinition = """\a . \b . \A . a a b"""
+  def orDefinition = """\a . \b . \A . a ((_ : A) -> (_ : A) -> A) (a A) (b A)"""
     
-  def boolEqDefinition = """\b1 . \b2 . \A . b1 (b2 tru fls) (b2 tru fls)"""
+  def boolEqDefinition = """\b1 . \b2 . b1 (b2 tru fls) (b2 fls tru)"""
     
     
   // TODO  
   def churchNatDefinition = """(A : Set) -> A -> (A -> A) -> A"""
     
   // Zero Lam(n, None, Lam (s, None, s)
-  def zeDefinition = """\A .\x . \y . x"""
+  def zeDefinition = """\A .\z . \s . z"""
   // Succ	Lam( n, None, Lam(s, None, Lam (z, None, App(s, App(App(n,s),z)))))
-  def suDefinition = """\n . \A . \x . \y . y (n A x y)"""
+  def suDefinition = """\n . \A . \z . \s . s (n A z s)"""
   // isZero   Lam(n, None, App(App(n,Lam(x, None, false)), true)
-  def isZeroDefinition = """\A .\n . n ( \ x . fls) tru"""
+  def isZeroDefinition = """\n . n tru (\x . fls)"""
   //plus	Lam(a, None, Lam(b, None, Lam(c, None,Lam(d, None, App(App(a, c), App(App(b,c),d))))))
-  def plusDefinition = """ \a . \b . \A . \c . \d . a c (b c d)"""
+  def plusDefinition = """ \a . \b . \A . \z . \s . a (b z s) s"""
     
   // If you make the optional exercise to define times using the natInd primitive, do it here...
   def timesDefinition = """TODO"""

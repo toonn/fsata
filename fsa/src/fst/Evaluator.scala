@@ -55,7 +55,8 @@ class Evaluator {
 	  case Var(i) => if (i==v) s else Var(i)
 	  
 	   //SAN: Regular syntax
-	  case Lam(name, ty, t1) => Lam(name, ty, subst(t1, v+1, shift(s,1,0)))
+	  case Lam(name, None, t1) => Lam(name, None, subst(t1, v+1, shift(s,1,0)))
+	  case Lam(name, Some(ty), t1) => Lam(name, Some(subst(ty,v,s)), subst(t1, v+1, shift(s,1,0)))
       case App(t1, t2) =>  App(subst(t1, v, s), subst(t2, v, s))  
       
       //SAN: Added special syntax
