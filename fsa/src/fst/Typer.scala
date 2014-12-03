@@ -126,7 +126,7 @@ class Typer(eval: Evaluator) {
       }
       // SAN: Type checking for dependent function
       case (Pi(name, a, b), None) => {
-        val uname = if (name == "_") { uniqueName(name, toNames(ctx)) }
+        val uname = if (name == "_") { uniqueName(name, toNames( (name,a)::ctx)) }
         			else { name }
         val (a1, _) = tcTerm(a, Some(Set), ctx) //SAN: a1 has to be a type
         val (b1, _) = tcTerm(b, Some(Set), (uname, a1) :: ctx) //SAN: b1 has to be a type with (x:a1) added to the context
