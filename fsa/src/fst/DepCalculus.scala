@@ -82,9 +82,13 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   def plusDefinition = """ \a . \b . \A . \z . \s . a (b z s) s"""
     
   // If you make the optional exercise to define times using the natInd primitive, do it here...
-  def timesDefinition = """TODO"""
+  		//SAN: Atm just the natInd definition of plus. I've no clue how to dot his.
+  def timesDefinition = """natInd (\n: Nat . Nat -> Nat) (\x : Nat . x) 
+    								(\n : Nat . \h:Nat -> Nat . \v: Nat . succ (h v))"""
   // If you make the optional exercise to define pred2 using the natInd primitive, do it here...
-  def pred2Definition = """TODO"""
+    	//SAN: Atm just the definition of plus. I've no clue how to dot his.
+  def pred2Definition = """natInd (\n: Nat . Nat -> Nat) (\x : Nat . x) 
+    								(\n : Nat . \h:Nat -> Nat . \v: Nat . succ (h v))"""
   // If you make the optional exercise to define the proof that 0 is a right zero for the function plus 
   // (assume that plus is already defined)
   def proofTerm = """TODO"""
