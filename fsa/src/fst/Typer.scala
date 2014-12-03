@@ -290,6 +290,11 @@ class Typer(eval: Evaluator) {
       case (Subst, None) => {
         (Subst, Set)
       }
+      
+      //SAN: BoolElim (*INCOMPLETE*)
+      case (BoolElim, None) => {
+        (BoolElim, Set)
+      }
 
       //End of SAN additions
       case (t, None) => throw new RequiresAnnotation(t, toNames(ctx))

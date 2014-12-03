@@ -61,7 +61,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkSubst = Subst
   
   // dependent if //SAN: Optional
-  override def mkBoolElim = notImplemented
+  override def mkBoolElim = BoolElim
   
     
   def churchBoolDefinition =  """(A : Set) -> A -> A  -> A"""

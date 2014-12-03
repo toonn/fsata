@@ -209,5 +209,9 @@ object Syntax {
 	}
 	case object Subst extends Term {
 	  override def prettyPrint(names: Names) = "subst"
-	}	
+	}
+		//BoolELim
+	case object BoolElim extends Term {
+	  override def prettyPrint(names: Names) = "boolElim"
+	}
 }
