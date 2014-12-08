@@ -128,9 +128,9 @@ class Evaluator {
 		  case IfThenElse(t1,t2,t3) if eval1(t1) != None 
 		  			=> Some(IfThenElse(eval1(t1).get,t2,t3))//E-If1
 		  case IfThenElse(t1,t2,t3) if eval1(t2) != None 
-		  			=> Some(IfThenElse(t1,eval1(t2).get,t3))//TODO E-If2
+		  			=> Some(IfThenElse(t1,eval1(t2).get,t3))// E-If2
 		  case IfThenElse(t1,t2,t3) if eval1(t3) != None 
-		  			=> Some(IfThenElse(t1,t2,eval1(t3).get))//TODO E-If3
+		  			=> Some(IfThenElse(t1,t2,eval1(t3).get))// E-If3
 		  
 		  		//SAN Nats
 		  case Succ(t) if eval(t) != None => Some(Succ(eval1(t).get)) // E-succ
@@ -152,6 +152,7 @@ class Evaluator {
 		  //case NatInd P: Term base: Term step: Term Zero => base
 		  
 		  		//SAN todo subst
+		  //case Subst A x y p (Refl A z) px => Some(px)
 
 		  case _ => None
 	  }
@@ -173,5 +174,10 @@ class Evaluator {
      * All terms in a DTLC normalize. 
      */
     //TODO: implement full beta reduction
-    def normalize(t:Term): Term = t 
+    def normalize(t:Term): Term = {
+      t match {
+        case App( Lam(name, ty, t1), t2) => subst(t2, 1, t1)
+      }
+      	
+    }
 }

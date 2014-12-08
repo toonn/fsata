@@ -164,7 +164,7 @@ class Typer(eval: Evaluator) {
             (Succ(e), Nat)
           }
           case _ => {
-            throw new ExpectedNat(e, ty1, toNames(ctx)) //TODO
+            throw new ExpectedNat(e, ty1, toNames(ctx))
           }
         }
       }
