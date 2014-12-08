@@ -173,7 +173,7 @@ class Evaluator {
      *
      * All terms in a DTLC normalize. 
      */
-    //TODO: implement full beta reduction
+    //TODO: implement full beta reduction. I don't think its more than this?
     def normalize(t:Term): Term = {
       t match {
         case App( Lam(name, ty, t1), t2) => subst(t2, 1, t1)
