@@ -119,9 +119,49 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest("""(\A:Set.\x:A.x) ((A : Set) -> A -> A) (\A:Set.\x:A.x) Nat 0""",calc.mkNat,calc.mkZero);
 	
 	//church encodings
-		//test 44
+		//test 44 onze toevoeging begint hier
 	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
 	                       let tru : bool = """ + calc.truDefinition + """ in
+	                       tru Bool true false
+	                       """, calc.mkBool, calc.mkTrue)
+	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
+	                       let tru : bool = """ + calc.truDefinition + """ in
+	                       let fls : bool = """ + calc.flsDefinition + """ in
+	                       fls Bool true false
+	                       """, calc.mkBool, calc.mkFalse)
+	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
+	                       let tru : bool = """ + calc.truDefinition + """ in
+	                       let fls : bool = """ + calc.flsDefinition + """ in
+	                       let not : bool -> bool = """ + calc.notDefinition + """ in
+	                       (not fls) Bool true false
+	                       """, calc.mkBool, calc.mkTrue)
+	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
+	                       let tru : bool = """ + calc.truDefinition + """ in
+	                       let fls : bool = """ + calc.flsDefinition + """ in
+	                       let not : bool -> bool = """ + calc.notDefinition + """ in
+	                       let and : bool -> bool -> bool = """ + calc.andDefinition + """ in
+	                       (and tru tru) Bool true false
+	                       """, calc.mkBool, calc.mkTrue)
+	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
+	                       let tru : bool = """ + calc.truDefinition + """ in
+	                       let fls : bool = """ + calc.flsDefinition + """ in
+	                       let not : bool -> bool = """ + calc.notDefinition + """ in
+	                       let and : bool -> bool -> bool = """ + calc.andDefinition + """ in
+	                       let or  : bool -> bool -> bool = """ + calc.orDefinition + """ in
+	                       (or fls tru) Bool true false
+	                       """, calc.mkBool, calc.mkTrue)
+	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
+	                       let tru : bool = """ + calc.truDefinition + """ in
+	                       let fls : bool = """ + calc.flsDefinition + """ in
+	                       let not : bool -> bool = """ + calc.notDefinition + """ in
+	                       let and : bool -> bool -> bool = """ + calc.andDefinition + """ in
+	                       let or  : bool -> bool -> bool = """ + calc.orDefinition + """ in
+	                       let bool_eq : bool -> bool -> bool = """ + calc.boolEqDefinition + """ in
+	                       (bool_eq tru tru) Bool true false
+	                       """, calc.mkBool, calc.mkTrue)
+	// 50 Onze toevoeging stopt hier
+	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
+	                       let tru : bool = """ + calc.truDefinition + """ in 
 	                       let fls : bool = """ + calc.flsDefinition + """ in
 	                       let not : bool -> bool = """ + calc.notDefinition + """ in
 	                       let and : bool -> bool -> bool = """ + calc.andDefinition + """ in
@@ -130,7 +170,19 @@ class DepTest extends FunSuite with ShouldMatchers {
 	                       let toBool : bool -> Bool = \b. b Bool true false in
 	                       toBool (and (or fls (not fls)) (bool_eq tru tru))
 	                    """, calc.mkBool, calc.mkTrue) 
-	                    
+	
+	// 51 Onze toevoeging voor nats
+	evaluateAndTypeTest("""let nat : Set = """ + calc.churchNatDefinition + """ in
+	                       let ze : nat = """ + calc.zeDefinition + """ in
+	                       ze Nat 0 (\a . succ a)
+	                    """, calc.mkNat, calc.mkZero)
+	evaluateAndTypeTest("""let nat : Set = """ + calc.churchNatDefinition + """ in
+	                       let ze : nat = """ + calc.zeDefinition + """ in
+	                       let su : nat -> nat = """ + calc.suDefinition + """ in
+	                       let toNat : nat -> Nat = \n. n Nat 0 (\x. succ x) in
+	                       toNat (su ze)
+	                    """, calc.mkNat, calc.mkNatLit(1))
+	// 53 Onze toevoeging voor nats stopt hier
 	evaluateAndTypeTest("""let nat : Set = """ + calc.churchNatDefinition + """ in
 	                       let ze : nat = """ + calc.zeDefinition + """ in
 	                       let su : nat -> nat = """ + calc.suDefinition + """ in
@@ -152,7 +204,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	                    """, calc.mkBool,calc.mkFalse)
 	
 	// natural induction...
-	     //test 47
+	     //test 55
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 							plus 0 0""",calc.mkNat,calc.mkZero);
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
@@ -162,7 +214,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 						   times 2 2""", calc.mkNat, calc.mkNatLit(4));
 	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
 						   pred2 0""", calc.mkNat, calc.mkZero);
-		//test 51
+		//test 52
 	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
 						   pred2 3""", calc.mkNat, calc.mkNatLit(2));
 	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
@@ -174,14 +226,14 @@ class DepTest extends FunSuite with ShouldMatchers {
 		""", calc.mkNat, calc.mkNatLit(10));
 
 	// dependent if tests
-		//test 54
+		//test 55
 	evaluateAndTypeTest("""let test : (x : Bool) -> if x then Nat else Bool = """ + calc.ifXThenNatElseBoolDefinition + """ in
 	                       test false""", calc.mkBool, null);
 	evaluateAndTypeTest("""let test : (x : Bool) -> if x then Nat else Bool = """ + calc.ifXThenNatElseBoolDefinition + """ in
 	                       test true""", calc.mkNat, null);
 	
 	// sigma types
-		//test 56
+		//test 57
 	evaluateAndTypeTest("""((1,1) : Sigma[ x : Nat ] Nat)""", calc.mkSigma("x", calc.mkNat, calc.mkNat), calc.mkPair(calc.mkNatLit(1),calc.mkNatLit(1)))
 	evaluateAndTypeTest("""Sigma[ x : Nat ] Nat""", calc.mkSet, calc.mkSigma("x", calc.mkNat, calc.mkNat))
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
@@ -194,7 +246,7 @@ class DepTest extends FunSuite with ShouldMatchers {
                         """,calc.mkNat,calc.mkNatLit(6))
                         
     // identity types... 
-         //test 60
+         //test 61
 	evaluateAndTypeTest("""let eqprf2 : I Nat 0 0 = refl Nat 0 in
 			eqprf2""", calc.mkApp(calc.mkApp(calc.mkApp(calc.mkI,calc.mkNat),calc.mkZero),calc.mkZero),
 			calc.mkApp(calc.mkApp(calc.mkRefl,calc.mkNat),calc.mkZero));
@@ -207,7 +259,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 							calc.mkPi("px",calc.mkApp(calc.mkVar(1),calc.mkZero),
 									calc.mkApp(calc.mkVar(2),calc.mkZero)))),
 									null);
-		//test 63
+		//test 64
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 			let eqprf : I Nat 0 (plus 0 0) = refl Nat 0 in
 			let eqprf2 : I Nat 0 0 = refl Nat 0 in
@@ -228,7 +280,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 		""", calc.mkApp(calc.mkApp(calc.mkApp(calc.mkI, calc.mkNat), calc.mkNatLit(6)), calc.mkNatLit(6)), 
 			calc.mkApp(calc.mkApp(calc.mkRefl, calc.mkNat), calc.mkNatLit(6)));
 	// cleaner using cong..
-		//test 65
+		//test 66
 	evaluateAndTypeTest("""
 	    let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 	    let cong : (A : Set) -> (x : A) -> (y : A) -> (B : Set) -> (f : A -> B) -> I A x y -> I B (f x) (f y) =
@@ -244,7 +296,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 			calc.mkApp(calc.mkApp(calc.mkRefl, calc.mkNat), calc.mkNatLit(6)));
 
 	// forall n. n + 0 = n
-	//test 67
+	//test 68
 	evaluateAndTypeTest(
 	    """let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 	       let prop : Nat -> Set = \ n:Nat. I Nat (plus n 0) n in

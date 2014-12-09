@@ -64,22 +64,29 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkBoolElim = BoolElim
   
     
-  def churchBoolDefinition =  """(A : Set) -> A -> A  -> A"""
+  def churchBoolDefinition =  """(A : Set) -> A -> A -> A"""
     
   def truDefinition = """\A . \x . \y . x"""
   def flsDefinition = """\A . \x . \y . y"""
   def notDefinition = """ \a . \A . \t . \f . a A f t"""
-  def andDefinition = """\a . \b . \A . a ((_ : A) -> (_ : A) -> A) (b A) (a A)"""
-  def orDefinition = """\a . \b . \A . a ((_ : A) -> (_ : A) -> A) (a A) (b A)"""
-  def boolEqDefinition = """\b1 . \b2 . b1 (b2 tru fls) (b2 fls tru)"""
+  def andDefinition = """\a . \b . \A . a (A -> A -> A) (b A) (a A)"""
+  def orDefinition = """\a . \b . \A . a (A -> A -> A) (a A) (b A)"""
+  def boolEqDefinition = """\b1 . \b2 . \A . b1
+  								(A -> A -> A)
+    							(b2 (A -> A -> A)
+    								((b1) A)
+    								((b2) A))
+  								(b2 (A -> A -> A)
+  									((b1) A)
+  									((\x . \y . x)))"""
     
     
   def churchNatDefinition = """(A : Set) -> A -> (A -> A) -> A"""
     
   def zeDefinition = """\A .\z . \s . z"""
   def suDefinition = """\n . \A . \z . \s . s (n A z s)"""
-  def isZeroDefinition = """\n . n tru (\x . fls)"""
-  def plusDefinition = """ \a . \b . \A . \z . \s . a (b z s) s"""
+  def isZeroDefinition = """\n . n bool tru (\_ . fls)""" // This assumes bool, tru and fls are defined in a let beforehand
+  def plusDefinition = """\a . \b . a nat (b nat ze su) su""" // This assumes nat, ze and su are defined in a let beforehand
     
   // If you make the optional exercise to define times using the natInd primitive, do it here...
   		//SAN: Atm just the natInd definition of plus. I've no clue how to dot his.
