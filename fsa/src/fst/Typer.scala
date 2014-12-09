@@ -192,7 +192,18 @@ class Typer(eval: Evaluator) {
       }
       //NatInd : SAN Incomplete, I think
       case (NatInd, None) => {
-        (NatInd, Nat)
+         //(P : Nat -> Set) -> P 0 -> ((n : Nat) -> P n -> P (succ n)) -> (n : Nat) -> P n
+        (NatInd, Pi("P",
+        			Pi("_", Nat, Set),
+        			Pi("_",
+        			   App(Var(0), Zero),
+        			   Pi("_",
+        				  Pi("n",
+        					 Nat,
+        					 Pi("_",
+        					     App(Var(3), Var(0)),
+        			             App(Var(4), Succ(Var(1))))),
+        			         Pi("n", Nat, App(Var(4), Var(0)))))))
       }
       //Bools
       case (Bool, None) => {

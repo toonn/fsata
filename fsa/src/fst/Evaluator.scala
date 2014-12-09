@@ -111,6 +111,11 @@ class Evaluator {
 	  //SAN: I added the nosuchelementexception try/catch
 	  try{
 	  t match {
+		  //SAN NatInd
+		  case App(App(App(App(NatInd,p),base),step),Zero) => println("natindbase"); Some(eval(base)) // E-natIndZero
+		  case App(App(App(App(NatInd,p),base),step),Succ(n)) 			// E-natIndNotZero
+		  	=> println("natindstep"); Some(termSubstTop(eval(App(App(App(App(NatInd,p),base),step),n)), eval(App(step, n))))
+		  	
 		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
 		  
 				  //SAN Basic E-rules
@@ -120,7 +125,7 @@ class Evaluator {
 		  case Pi(v, t1, t2) if eval1(t2) != None => Some(Pi(v,t1,eval(t2))) //E-Pi1
 		  case Pi(v, t1, t2) if eval1(t1) != None => Some(Pi(v,eval(t1),t2)) //E-Pi2
 		  case App(t1,t2) if eval1(t2) != None => Some(App(t1,eval(t2))) //E-App1
-		  case App(t1,t2) if eval1(t1) != None => Some(App(eval(t1),t2)) //E-Abs2
+		  case App(t1,t2) if eval1(t1) != None => Some(App(eval(t1),t2)) //E-App2
 		 
 		  		  //SAN  Bools
 		  case IfThenElse(True,t2,t3) => Some(t2) //E-IfTrue
@@ -148,11 +153,7 @@ class Evaluator {
 		  		//SAN Let
 		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let
 		  
-		  		//SAN NatInd
-		  case App(App(App(App(NatInd,p),base),step),Zero) =>	Some(base) // E-natIndZero
-		  case App(App(App(App(NatInd,p),base),step),Succ(n)) 			// E-natIndNotZero
-		  	=> Some(termSubstTop(eval(App(App(App(App(NatInd,p),base),step),n)), eval(App(step, n))))
-		  	
+		  
 		  		//SAN todo subst
 		  //case Subst A x y p (Refl A z) px => Some(px)
 
