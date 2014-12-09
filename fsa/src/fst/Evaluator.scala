@@ -150,8 +150,8 @@ class Evaluator {
 		  
 		  		//SAN NatInd
 		  case App(App(App(App(NatInd,p),base),step),Zero) =>	Some(base) // E-natIndZero
-		  case App(App(App(App(NatInd,p),base),step),Succ(n)) 
-		  		if eval(n) == Some(Nat) =>	Some(base) // E-natIndNotZero
+		  //case App(App(App(App(NatInd,p),base),step),Succ(n)) 			// E-natIndNotZero
+		  //	if eval(n) == Some(Nat) =>	base App(App(App(App(NatInd,p),base),step),n)( 
 		  		//SAN todo subst
 		  //case Subst A x y p (Refl A z) px => Some(px)
 
