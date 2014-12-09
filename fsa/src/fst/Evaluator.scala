@@ -148,9 +148,10 @@ class Evaluator {
 		  		//SAN Let
 		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let
 		  
-		  		//SAN NatInd TODO
-		  //case NatInd P: Term base: Term step: Term Zero => base
-		  
+		  		//SAN NatInd
+		  case App(App(App(App(NatInd,p),base),step),Zero) =>	Some(base) // E-natIndZero
+		  case App(App(App(App(NatInd,p),base),step),Succ(n)) 
+		  		if eval(n) == Some(Nat) =>	Some(base) // E-natIndNotZero
 		  		//SAN todo subst
 		  //case Subst A x y p (Refl A z) px => Some(px)
 
@@ -178,6 +179,6 @@ class Evaluator {
       t match {
         case App( Lam(name, ty, t1), t2) => subst(t2, 1, t1)
       }
-      	
+     
     }
 }
