@@ -89,7 +89,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   def plusDefinition = """\a . \b . a nat (b nat ze su) su""" // This assumes nat, ze and su are defined in a let beforehand
     
   // If you make the optional exercise to define times using the natInd primitive, do it here...
-  		//SAN: Atm just the natInd definition of plus. I've no clue how to dot his.
+  		//SAN: Atm just the natInd definition of plus. I've no clue how to do his.
   def timesDefinition = """natInd (\n: Nat . Nat -> Nat) (\x : Nat . x) 
     								(\n : Nat . \h:Nat -> Nat . \v: Nat . succ (h v))"""
   // If you make the optional exercise to define pred2 using the natInd primitive, do it here...

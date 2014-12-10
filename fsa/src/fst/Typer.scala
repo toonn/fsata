@@ -293,18 +293,59 @@ class Typer(eval: Evaluator) {
 
       //SAN: Identity types (*INCOMPLETE*)
       case (I, None) => {
-        (I, Set)
+       // (A : Set) -> A -> A -> Set
+        (I, Pi("A",
+        		Set,
+        		Pi("_",
+        		    Var(1),
+        		    Pi("_",
+        		        Var(2),
+        		        Set))))
+            
       }
       case (Refl, None) => {
-        (Refl, Set)
+        // (A : Set) -> (x : A) -> I A x x
+        (Refl, Pi("A",
+        			Set,
+        			Pi("x",
+        			    Var(0),
+        			    Pi("_",
+        			        Pi("_", I, Var(2)),
+        			        App(Var(0),Var(0))))))
       }
       case (Subst, None) => {
-        (Subst, Set)
+       //(A : Set)->(x : A) ->(y : A) ->(P : A ->Set) ->I A x y ->P x ->P y
+        (Subst, Pi("A",
+        			Set,
+        			Pi("x",
+        			    Var(0),
+        			    Pi("y",
+        			        Var(1),
+        			        Pi("P",
+        			            Pi("_",Var(3),Set),
+        			            Pi("_", 
+        			            	App(App(App(I,Var(4)),Var(3)),Var(2)),
+        			            	Pi("_",
+        			            	    App(Var(2),Var(4)),
+        			            	    Pi("_",Var(3),Var(4)))))))))
+        			            	    
+        			         
       }
       
       //SAN: BoolElim (*INCOMPLETE*)
       case (BoolElim, None) => {
-        (BoolElim, Set)
+        //(P:Bool->Set)->P true->P false->(b : Bool)-> P b        
+        (BoolElim, Pi("P",
+        			Pi("_", Bool, Set),
+        			Pi("_",
+        			   App(Var(0), True),
+        			   Pi("_",
+        			      App(Var(1),False),
+        				  Pi("_",
+        					 Pi("b",Bool,Set),
+        					 Pi("b",
+        					    Bool,
+        					    App(Var(3),Var(0))))))))
       }
 
       //End of SAN additions

@@ -116,6 +116,16 @@ class Evaluator {
 		  case App(App(App(App(NatInd,p),base),step),Succ(n)) 			// E-natIndNotZero
 		  	=> println("natindstep"); Some(termSubstTop(eval(App(App(App(App(NatInd,p),base),step),n)), eval(App(step, n))))
 		  	
+		  	//SAN BoolElim
+		  case App(App(App(BoolElim,True),t2),t3) => Some(t2) //E-BoolElimTrue
+		  case App(App(App(BoolElim,False),t2),t3) => Some(t3) //E-BoolElimFalse
+		  case App(App(App(BoolElim,t1),t2),t3) => Some(App(App(App(BoolElim,eval(t1)),t2),t3)) //E-BoolElim
+		  //TODO I don't think boolelim2 and 3 are necessary, since it is dependently typed
+
+		  	//SAN Identity
+		  		//the a and b are the A from the assignment and basically indicate type. Unsure if what I'm doing is correct
+		  case App(App(App(App(App(App(Subst,a),x),y),p),App(App(Refl,b),z)),px) if a == b => Some(px)
+		  		//SAN basic
 		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
 		  
 				  //SAN Basic E-rules
@@ -153,10 +163,6 @@ class Evaluator {
 		  		//SAN Let
 		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let
 		  
-		  
-		  		//SAN todo subst
-		  //case Subst A x y p (Refl A z) px => Some(px)
-
 		  case _ => None
 	  }
 	  } catch{
@@ -179,7 +185,8 @@ class Evaluator {
     //TODO: implement full beta reduction. I don't think its more than this?
     def normalize(t:Term): Term = {
       t match {
-        case App( Lam(name, ty, t1), t2) => subst(t2, 1, t1)
+        case App( Lam(name, ty, t1), t2) => subst(t2, 1, t1) //Beta-AppAbs
+        //TODO do we also need beta abs, beta app1, beta app2?
       }
      
     }
