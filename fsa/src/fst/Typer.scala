@@ -155,10 +155,12 @@ class Typer(eval: Evaluator) {
         tcTerm(t, Some(a), ctx)
       }
       case (t, Some(a)) => {
-        println("" + t + " -- " + a)
+        println("\n" + t + " -- " + a)
         val (t1: Term, a1) = tcTerm(t, None, ctx)
-        println("" +t1 + " __ " + a1)
-        if (!equalTerms(a, a1, ctx)) throw new UnequalTerms(t, t1, toNames(ctx))
+        println("\n" +t1 + " __ " + a1)
+        if (!equalTerms(a, a1, ctx)) {
+          throw new UnequalTerms(t, t1, toNames(ctx))
+        }
         (t1, a1)
       }
 

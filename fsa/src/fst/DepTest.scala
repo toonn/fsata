@@ -24,6 +24,10 @@ class DepTest extends FunSuite with ShouldMatchers {
             val e : Term = parser.parseTerm(in);
             println("\n### Parsed expression: " + e)
             System.out.println(" (OK)")
+            if(nr==55){
+	    	  //We find a quick way to enter the relevant debug sequence...
+	    	  var j = i; //something random to stop on
+	    	}
             try {
             	if(ty != null) {
             		System.out.print("Checking that " + e + " has type " + ty)
