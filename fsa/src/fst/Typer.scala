@@ -95,18 +95,31 @@ class Typer(eval: Evaluator) {
       }
       // SAN: Type checking for abstraction (lambda expression) unannoted version (I think)
       //		Has to check that argument type is of type Set    
-      case (Lam(n1, None, t), Some(ty)) => {
-        eval.eval(ty) match {
-          case Pi(n2, b, c) =>
-            val (body, _) = tcTerm(t, Some(c), (n1, b) :: ctx)
-            (Lam(n1, Some(b), body), Pi(n2, b, c))
-          case ty1 => throw new ExpectedPi(ty, ty1, toNames(ctx)) //TODO
-        }
+      case (Lam(n1, ty1, t), Some(ty)) => {
+    	  println("" + Lam(n1, ty1, t) + " -l- " + ty)
+    	  eval.eval(ty) match {
+    	  	case Pi(n2, b, c) =>
+    	  		ty1 match {
+    	  			case None => val (body, _) = tcTerm(t, Some(c), (n1, b) :: ctx)
+    	  						println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
+    	  						(Lam(n1, Some(b), body), Pi(n2, b, c))
+    	  			case Some(l_ty) => if (equalTerms(l_ty, b, ctx)) {
+    	  									val (body, _) = tcTerm(t, Some(c), (n1, b) :: ctx)
+    	  									println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
+    	  									(Lam(n1, Some(b), body), Pi(n2, b, c))
+    	  								} else {
+    	  								  throw new UnequalTerms(l_ty, b, toNames((n1, b) :: ctx))
+    	  								}
+    	  		}
+    	  	case ty1 => throw new ExpectedPi(ty, ty1, toNames(ctx)) //TODO
+    	  }
       }
       // SAN: Type checking for abstraction (lambda expression) annoted version
       //		Has to check that argument type is of type Set
       case (Lam(name, Some(a), t), None) => {
+        println("" + Lam(name, Some(a), t) + " -l- " + None)
         val (body, c) = tcTerm(t, None, (name, a) :: ctx)
+        println("" + Lam(name, Some(a), t) + " _l_ " + None)
         (Lam(name, Some(a), body), Pi(name, a, c))
       }
       // SAN: Type checking for application
@@ -117,6 +130,8 @@ class Typer(eval: Evaluator) {
         eval.eval(ty1) match {
           case Pi(name, a, b) => { //SAN: in that case, arg of t should be type a and app f t has type the value of the Pi type
             val (t1, _) = tcTerm(t, Some(a), ctx) //		for the argument the function was applied to
+            println("App resty: " + b)
+            println("App subst: " + eval.termSubstTop(t1, b))
             (App(f1, t1), eval.termSubstTop(t1, b))
           }
           case _ => {
@@ -140,9 +155,9 @@ class Typer(eval: Evaluator) {
         tcTerm(t, Some(a), ctx)
       }
       case (t, Some(a)) => {
-        println("tcTerm start " + t + " -- " + a)
+        println("" + t + " -- " + a)
         val (t1: Term, a1) = tcTerm(t, None, ctx)
-        println("tcTerm end "+ t1 + " __ " + a1)
+        println("" +t1 + " __ " + a1)
         if (!equalTerms(a, a1, ctx)) throw new UnequalTerms(t, t1, toNames(ctx))
         (t1, a1)
       }
