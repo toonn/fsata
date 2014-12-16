@@ -86,7 +86,7 @@ class Evaluator {
       case Unit => Unit
       
       //SAN: Sigma types
-      case Sigma(name,t1,t2) => Sigma(name,subst(t1,v,s), subst(t2,v,s))
+      case Sigma(name,t1,t2) => Sigma(name,subst(t1,v,s), subst(t2,v+1,shift(s,1,0)))
       case Pair(t1,t2) => Pair(subst(t1, v, s),subst(t2, v, s))
       case First(t1) => First(subst(t1, v, s))
       case Second(t1) => Second(subst(t1, v, s))

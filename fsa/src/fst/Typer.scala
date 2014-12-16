@@ -253,23 +253,18 @@ class Typer(eval: Evaluator) {
       case (Pair(s, t), None) => {
         val (s1, s_ty) = tcTerm(s, None, ctx)
         val (t1, t_ty) = tcTerm(t, None, ctx)
-        (Pair(s1, t1), Sigma("x", s_ty, t_ty))
+        (Pair(s1, t1), Sigma("_", s_ty, t_ty))
       }
       case (First(t), None) => {
         tcTerm(t, None, ctx) match {
-          case (Pair(t1, t2), ty) =>
-          	eval.eval(ty) match {
-          		case Sigma(v, a, b) => (t1, a)
-          		case _ => throw new ExpectedSigma(Pair(t1, t2), ty, toNames(ctx))
-          	}
-          case (tnopair, tynopair) => throw new ExpectedPair(t, tynopair, toNames(ctx))
+          case (_, Sigma(v, a, b)) => (First(t), a)
+          case (_, ty) => throw new ExpectedPair(t, ty, toNames(ctx))
         }
       }
       case (Second(t), None) => {
-        val (Pair(t1, t2), ty) = tcTerm(t, None, ctx)
-        eval.eval(ty) match {
-          case Sigma(v, a, b) => (t2, eval.termSubstTop(a, b))
-          case _ => throw new ExpectedSigma(Pair(t1, t2), ty, toNames(ctx))
+        tcTerm(t, None, ctx) match {
+          case (_, Sigma(v, a, b)) => (Second(t), eval.termSubstTop(a, b))
+          case (_, ty) => throw new ExpectedPair(t, ty, toNames(ctx))
         }
       }
       //SAN: Bools
