@@ -94,7 +94,12 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
     								(\n : Nat . \h : Nat . n)"""
   // If you make the optional exercise to define the proof that 0 is a right zero for the function plus 
   // (assume that plus is already defined)
-  def proofTerm = """TODO"""
+  def proofTerm = """natInd (\n : Nat . I Nat (plus n 0) n)
+    						(refl Nat 0)
+    						(\n : Nat . \hyp : I Nat (plus n 0) n .
+    							subst Nat (plus n 0) n
+    								(\t : Nat . I Nat (succ (plus n 0)) (succ t)) (hyp)
+    								(refl Nat (succ (plus n 0))))"""
   // If you make the optional exercise to construct a value of type ((b : Bool) -> if b then Nat else Bool) 
   // using the boolElim primitive, do it here...
   def ifXThenNatElseBoolDefinition = """boolElim (\n: Bool . if n then Nat else Bool) 0 true"""
