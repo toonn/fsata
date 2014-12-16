@@ -120,7 +120,6 @@ class Evaluator {
 		  case App(App(App(App(BoolElim,p),ptrue),pfalse),True) => Some(ptrue) //E-BoolElimTrue
 		  case App(App(App(App(BoolElim,p),ptrue),pfalse),False) => Some(pfalse) //E-BoolElimFalse
 		  case App(App(App(App(BoolElim,p),ptrue),pfalse),b) => Some(App(App(App(App(BoolElim,p),ptrue),pfalse),eval(b))) //E-BoolElim
-		  //TODO I don't think boolelim2 and 3 are necessary, since it is dependently typed
 
 		  	//SAN Identity
 		  		//the a and b are the A from the assignment and basically indicate type. Unsure if what I'm doing is correct
@@ -148,17 +147,19 @@ class Evaluator {
 		  			=> Some(IfThenElse(t1,t2,eval1(t3).get))// E-If3
 		  
 		  		//SAN Nats
-		  case Succ(t) if eval(t) != None => Some(Succ(eval1(t).get)) // E-succ
+		  case Succ(t) if eval1(t) != None => Some(Succ(eval(t))) // E-succ
 		  case Pred(Zero) => Some(Zero) //E-PredZero
 		  case Pred(Succ(t)) => Some(t)	//E-PredSucc
-		  case Pred(t) if eval(t) != None => Some(Pred(eval1(t).get))// E-Pred
+		  case Pred(t) if eval1(t) != None => Some(Pred(eval(t)))// E-Pred
 		  case IsZero(Zero) => Some(True)	//E-IsZeroZero
 		  case IsZero(Succ(t)) => Some(False)	// E-IsZeroSucc
-		  case IsZero(t) if eval(t) != None => Some(IsZero(eval1(t).get))// E-IsZero
+		  case IsZero(t) if eval1(t) != None => Some(IsZero(eval(t)))// E-IsZero
 		  
 		  		//SAN Sigma types
 		  case First(Pair(s,t)) => Some(s)	//E-Fst
 		  case Second(Pair(s,t)) => Some(t)	//E-Snd
+		  case First(t) if eval1(t) != None => Some(First(eval(t)))
+		  case Second(t) if eval1(t) != None => Some(Second(eval(t)))
 		  
 		  		//SAN Let
 		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let

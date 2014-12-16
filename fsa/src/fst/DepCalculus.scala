@@ -16,11 +16,7 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   
   // essentials
   override def mkVar(i : Int) = Var(i)
-  override def mkAbs(v: String, ty: Option[Term], t: Term) =
-  	ty match {
-  		case None => Lam(v, None, t)
-  		case Some(ty1) => Lam(v,Some(ty1),t)
-  	}
+  override def mkAbs(v: String, ty: Option[Term], t: Term) = Lam(v, ty, t)
   override def mkApp(f : Term, a : Term) = App(f,a)
   
   override def mkLet(v: String, ty: Term, vi: Term, t: Term) : Term = Let(v,ty,vi,t)

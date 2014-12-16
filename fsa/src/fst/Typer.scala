@@ -65,13 +65,27 @@ class Typer(eval: Evaluator) {
     val nctx = shiftContext(ctx, 1, 0)
     (eval.eval(t1), eval.eval(t2)) match {
       case (et1, et2) if et1 == et2 => true
-      // TODO: add more cases here
+
       //SAN Addition
-      case (Lam(_, None, t1), Lam(_, None, t2)) if equalTerms(t1, t2, nctx) => true
-      case (Lam(_, Some(ty1), t1), Lam(_, Some(ty2), t2)) if equalTerms(ty1, ty2, nctx) & equalTerms(t1, t2, nctx) => true
+      case (Lam(_, None, b1), Lam(_, None, b2))
+      	if equalTerms(b1, b2, nctx) => true
+      case (Lam(_, Some(ty1), b1), Lam(_, Some(ty2), b2))
+      	if equalTerms(ty1, ty2, ctx) & equalTerms(b1, b2, nctx) => true
 
-      case (Pi(_, ty1, ty2), Pi(_, ty3, ty4)) if equalTerms(ty1, ty3, nctx) & equalTerms(ty2, ty4, nctx) => true
+      case (Pi(_, ty1, ty2), Pi(_, ty3, ty4))
+      	if equalTerms(ty1, ty3, ctx) & equalTerms(ty2, ty4, nctx) => true
 
+      case (Pair(p1, p2), Pair(p3, p4))
+      	if equalTerms(p1, p3, ctx) & equalTerms(p2, p4, ctx) => true
+      case (Pair(p1, p2), Sigma(_, s1, s2))
+      	if equalTerms(p1, s1, ctx) & equalTerms(p2, eval.shift(s2, -1, 0), ctx) => true
+      case (Sigma(_, s1, s2), Pair(p1, p2))
+      	if equalTerms(p1, s1, ctx) & equalTerms(p2, eval.shift(s2, -1, 0), ctx) => true
+      case (Sigma(_, s1, s2), Sigma(_, s3, s4))
+      	if equalTerms(s1, s3, ctx) & equalTerms(s2, s4, nctx) => true
+      	
+      // Let moet niet omdat het geen value is.
+      
       case (et1, et2) => false
     }
   }
@@ -154,8 +168,9 @@ class Typer(eval: Evaluator) {
       }
       case (t, Some(a)) => {
         println("\n" + t + " -- " + a)
-        val (t1: Term, a1) = tcTerm(t, None, ctx)
-        println("\n" +t1 + " __ " + a1)
+        val (tt: Term, at) = tcTerm(t, None, ctx)
+        val (t1: Term, a1) = (eval.eval(tt), eval.eval(at))
+        println("\n" + t1 + " __ " + a1)
         if (!equalTerms(a, a1, ctx)) {
           throw new UnequalTerms(t, t1, toNames(ctx))
         }
@@ -250,6 +265,11 @@ class Typer(eval: Evaluator) {
         val (b1, _) = tcTerm(b, Some(Set), (v, a1) :: ctx)
         (Sigma(v, a1, b1), Set)
       }
+      case (Pair(s, t), Some(Sigma(v, a , b))) => {
+        val (s1, s_ty) = tcTerm(s, Some(a), ctx)
+        val (t1, t_ty) = tcTerm(t, Some(b), (v, a) :: ctx)
+        (Pair(s1, t1), Sigma(v, s_ty, t_ty))
+      }
       case (Pair(s, t), None) => {
         val (s1, s_ty) = tcTerm(s, None, ctx)
         val (t1, t_ty) = tcTerm(t, None, ctx)
@@ -257,7 +277,7 @@ class Typer(eval: Evaluator) {
       }
       case (First(t), None) => {
         tcTerm(t, None, ctx) match {
-          case (_, Sigma(v, a, b)) => (First(t), a)
+          case (_, Sigma(_, a, _)) => (First(t), a)
           case (_, ty) => throw new ExpectedPair(t, ty, toNames(ctx))
         }
       }
@@ -295,40 +315,28 @@ class Typer(eval: Evaluator) {
       //SAN: Identity types (*INCOMPLETE*)
       case (I, None) => {
        // (A : Set) -> A -> A -> Set
-        (I, Pi("A",
-        		Set,
-        		Pi("_",
-        		    Var(1),
-        		    Pi("_",
-        		        Var(2),
+        (I, Pi("A", Set,
+        		Pi("_", Var(0),
+        		    Pi("_", Var(1),
         		        Set))))
             
       }
       case (Refl, None) => {
         // (A : Set) -> (x : A) -> I A x x
-        (Refl, Pi("A",
-        			Set,
-        			Pi("x",
-        			    Var(0),
-        			    Pi("_",
-        			        Pi("_", I, Var(2)),
-        			        App(Var(0),Var(0))))))
+        (Refl, Pi("A", Set,
+        		   Pi("x", Var(0),
+        			   App(App(App(I, Var(1)), Var(0)), Var(0)))))
       }
       case (Subst, None) => {
-       //(A : Set)->(x : A) ->(y : A) ->(P : A ->Set) ->I A x y ->P x ->P y
-        (Subst, Pi("A",
-        			Set,
-        			Pi("x",
-        			    Var(0),
-        			    Pi("y",
-        			        Var(1),
-        			        Pi("P",
-        			            Pi("_",Var(3),Set),
-        			            Pi("_", 
-        			            	App(App(App(I,Var(4)),Var(3)),Var(2)),
-        			            	Pi("_",
-        			            	    App(Var(2),Var(4)),
-        			            	    Pi("_",Var(3),Var(4)))))))))
+       //(A : Set) -> (x : A) -> (y : A) -> (P : A -> Set) -> I A x y -> P x -> P y
+        (Subst, Pi("A", Set,
+        			Pi("x", Var(0),
+        			    Pi("y", Var(1),
+        			        Pi("P", Pi("_", Var(2),
+        			        			Set),
+        			            Pi("_", App(App(App(I,Var(3)),Var(2)),Var(1)),
+        			            	Pi("_", App(Var(1),Var(3)),
+        			            	    App(Var(2), Var(3)))))))))
         			            	    
         			         
       }
