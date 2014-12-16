@@ -41,7 +41,7 @@ class Evaluator {
       case Unit => Unit
       
       //SAN: Sigma types
-      case Sigma(name,t1,t2) => Sigma(name,shift(t1,d,c), shift(t2,d,c))
+      case Sigma(name,t1,t2) => Sigma(name,shift(t1,d,c), shift(t2,d,c+1))
       case Pair(t1,t2) => Pair(shift(t1, d, c),shift(t2, d, c))
       case First(t1) => First(shift(t1, d, c))
       case Second(t1) => Second(shift(t1, d, c))
@@ -117,9 +117,9 @@ class Evaluator {
 		  	=> Some(App(eval(App(step, n)), eval(App(App(App(App(NatInd,p),base),step),n))))
 		  	
 		  	//SAN BoolElim
-		  case App(App(App(BoolElim,True),t2),t3) => Some(t2) //E-BoolElimTrue
-		  case App(App(App(BoolElim,False),t2),t3) => Some(t3) //E-BoolElimFalse
-		  case App(App(App(BoolElim,t1),t2),t3) => Some(App(App(App(BoolElim,eval(t1)),t2),t3)) //E-BoolElim
+		  case App(App(App(App(BoolElim,p),ptrue),pfalse),True) => Some(ptrue) //E-BoolElimTrue
+		  case App(App(App(App(BoolElim,p),ptrue),pfalse),False) => Some(pfalse) //E-BoolElimFalse
+		  case App(App(App(App(BoolElim,p),ptrue),pfalse),b) => Some(App(App(App(App(BoolElim,p),ptrue),pfalse),eval(b))) //E-BoolElim
 		  //TODO I don't think boolelim2 and 3 are necessary, since it is dependently typed
 
 		  	//SAN Identity

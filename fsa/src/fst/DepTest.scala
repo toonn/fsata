@@ -212,30 +212,31 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 						   let times : Nat -> Nat -> Nat = """ + calc.timesDefinition + """ in
 						   times 2 2""", calc.mkNat, calc.mkNatLit(4));
-	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
-						   pred2 0""", calc.mkNat, calc.mkZero);
-		//test 59
-	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
-						   pred2 3""", calc.mkNat, calc.mkNatLit(2));
-	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
-						   pred2 10""", calc.mkNat, calc.mkNatLit(9));
 	evaluateAndTypeTest("""
 	    let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 		let oneton : Nat -> Nat = natInd (\n : Nat. Nat) 0 (\n : Nat. \s : Nat. plus n s) in
 	    oneton 5
 		""", calc.mkNat, calc.mkNatLit(10));
+	//test 59
+	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
+						   pred2 0""", calc.mkNat, calc.mkZero);
+	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
+						   pred2 3""", calc.mkNat, calc.mkNatLit(2));
+	evaluateAndTypeTest("""let pred2 : Nat -> Nat = """ + calc.pred2Definition + """ in
+						   pred2 10""", calc.mkNat, calc.mkNatLit(9));
+	
 
 	// dependent if tests
 		//test 62
 	evaluateAndTypeTest("""let test : (x : Bool) -> if x then Nat else Bool = """ + calc.ifXThenNatElseBoolDefinition + """ in
-	                       test false""", calc.mkBool, null);
+	                       test false""", calc.mkBool, calc.mkTrue);
 	evaluateAndTypeTest("""let test : (x : Bool) -> if x then Nat else Bool = """ + calc.ifXThenNatElseBoolDefinition + """ in
-	                       test true""", calc.mkNat, null);
+	                       test true""", calc.mkNat, calc.mkZero);
 	
 	// sigma types
 		//test 64
-	evaluateAndTypeTest("""((1,1) : Sigma[ x : Nat ] Nat)""", calc.mkSigma("x", calc.mkNat, calc.mkNat), calc.mkPair(calc.mkNatLit(1),calc.mkNatLit(1)))
 	evaluateAndTypeTest("""Sigma[ x : Nat ] Nat""", calc.mkSet, calc.mkSigma("x", calc.mkNat, calc.mkNat))
+	evaluateAndTypeTest("""((1,1) : Sigma[ x : Nat ] Nat)""", calc.mkSigma("x", calc.mkNat, calc.mkNat), calc.mkPair(calc.mkNatLit(1),calc.mkNatLit(1)))
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 	                       let sum : (Sigma[ x : Nat ] Nat) -> Nat = \pair. plus (fst pair) (snd pair) in
 	                       sum (2,3)""", calc.mkNat, calc.mkNatLit(5))

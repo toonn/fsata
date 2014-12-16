@@ -90,16 +90,16 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
     
   // If you make the optional exercise to define times using the natInd primitive, do it here...
   		//SAN: Atm just the natInd definition of plus. I've no clue how to do his.
-  def timesDefinition = """natInd (\n: Nat . Nat -> Nat) (\x : Nat . x) 
-    								(\n : Nat . \h:Nat -> Nat . \v: Nat . succ (h v))"""
+  def timesDefinition = """natInd (\n: Nat . Nat -> Nat) (\_ : Nat . 0) 
+    								(\n : Nat . \h : Nat -> Nat . \v: Nat . plus (h v) v)"""
   // If you make the optional exercise to define pred2 using the natInd primitive, do it here...
     	//SAN: Atm just the definition of plus. I've no clue how to dot his.
-  def pred2Definition = """natInd (\n: Nat . Nat -> Nat) (\x : Nat . x) 
-    								(\n : Nat . \h:Nat -> Nat . \v: Nat . succ (h v))"""
+  def pred2Definition = """natInd (\n: Nat . Nat) (0)
+    								(\n : Nat . \h : Nat . n)"""
   // If you make the optional exercise to define the proof that 0 is a right zero for the function plus 
   // (assume that plus is already defined)
   def proofTerm = """TODO"""
   // If you make the optional exercise to construct a value of type ((b : Bool) -> if b then Nat else Bool) 
   // using the boolElim primitive, do it here...
-  def ifXThenNatElseBoolDefinition = """TODO"""
+  def ifXThenNatElseBoolDefinition = """boolElim (\n: Bool . if n then Nat else Bool) 0 true"""
 }

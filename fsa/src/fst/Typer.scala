@@ -28,7 +28,7 @@ case class ExpectedBool(t: Term, ty: Term, names: Names) extends TypeException()
 }
 //SAN: Added
 case class ExpectedPair(t: Term, ty: Term, names: Names) extends TypeException() {
-  override def errorMessage = "Expected Pair type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
+  override def errorMessage = "Expected Pair for " + t.prettyPrint(names) + ",\n it's type is " + ty.prettyPrint(names)
 }
 //SAN: Added
 case class ExpectedSet(t: Term, ty: Term, names: Names) extends TypeException() {
@@ -251,30 +251,25 @@ class Typer(eval: Evaluator) {
         (Sigma(v, a1, b1), Set)
       }
       case (Pair(s, t), None) => {
-        val (s1, _) = tcTerm(s, Some(Set), ctx)
-        val (t1, _) = tcTerm(t, Some(Set), ctx)
-        (Pair(s1, t1), Set)
+        val (s1, s_ty) = tcTerm(s, None, ctx)
+        val (t1, t_ty) = tcTerm(t, None, ctx)
+        (Pair(s1, t1), Sigma("x", s_ty, t_ty))
       }
       case (First(t), None) => {
-        val (t1, ty1) = tcTerm(t, Some(Set), ctx)
-        eval.eval(ty1) match {
-          case Pair(_, _) => {
-            (First(t), ty1)
-          }
-          case _ => {
-            throw new ExpectedPair(t1, ty1, toNames(ctx))
-          }
+        tcTerm(t, None, ctx) match {
+          case (Pair(t1, t2), ty) =>
+          	eval.eval(ty) match {
+          		case Sigma(v, a, b) => (t1, a)
+          		case _ => throw new ExpectedSigma(Pair(t1, t2), ty, toNames(ctx))
+          	}
+          case (tnopair, tynopair) => throw new ExpectedPair(t, tynopair, toNames(ctx))
         }
       }
       case (Second(t), None) => {
-        val (t1, ty1) = tcTerm(t, Some(Set), ctx)
-        eval.eval(ty1) match {
-          case Pair(_, _) => {
-            (Second(t), ty1)
-          }
-          case _ => {
-            throw new ExpectedPair(t1, ty1, toNames(ctx))
-          }
+        val (Pair(t1, t2), ty) = tcTerm(t, None, ctx)
+        eval.eval(ty) match {
+          case Sigma(v, a, b) => (t2, eval.termSubstTop(a, b))
+          case _ => throw new ExpectedSigma(Pair(t1, t2), ty, toNames(ctx))
         }
       }
       //SAN: Bools
@@ -345,18 +340,12 @@ class Typer(eval: Evaluator) {
       
       //SAN: BoolElim (*INCOMPLETE*)
       case (BoolElim, None) => {
-        //(P:Bool->Set)->P true->P false->(b : Bool)-> P b        
-        (BoolElim, Pi("P",
-        			Pi("_", Bool, Set),
-        			Pi("_",
-        			   App(Var(0), True),
-        			   Pi("_",
-        			      App(Var(1),False),
-        				  Pi("_",
-        					 Pi("b",Bool,Set),
-        					 Pi("b",
-        					    Bool,
-        					    App(Var(3),Var(0))))))))
+        //(P : Bool -> Set) -> P true -> P false -> (b : Bool)-> P b        
+        (BoolElim, Pi("P", Pi("_", Bool, Set),
+        			   Pi("_", App(Var(0), True),
+        			       Pi("_", App(Var(1), False),
+        					   Pi("x", Bool,
+        					       App(Var(3),Var(0)))))))
       }
 
       //End of SAN additions
