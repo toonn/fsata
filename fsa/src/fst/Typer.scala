@@ -130,8 +130,6 @@ class Typer(eval: Evaluator) {
         eval.eval(ty1) match {
           case Pi(name, a, b) => { //SAN: in that case, arg of t should be type a and app f t has type the value of the Pi type
             val (t1, _) = tcTerm(t, Some(a), ctx) //		for the argument the function was applied to
-            println("App resty: " + b)
-            println("App subst: " + eval.termSubstTop(t1, b))
             (App(f1, t1), eval.termSubstTop(t1, b))
           }
           case _ => {
@@ -208,17 +206,13 @@ class Typer(eval: Evaluator) {
       //NatInd : SAN Incomplete, I think
       case (NatInd, None) => {
          //(P : Nat -> Set) -> P 0 -> ((n : Nat) -> P n -> P (succ n)) -> (n : Nat) -> P n
-        (NatInd, Pi("P",
-        			Pi("_", Nat, Set),
-        			Pi("_",
-        			   App(Var(0), Zero),
-        			   Pi("_",
-        				  Pi("n",
-        					 Nat,
-        					 Pi("_",
-        					     App(Var(3), Var(0)),
-        			             App(Var(4), Succ(Var(1))))),
-        			         Pi("n", Nat, App(Var(4), Var(0)))))))
+    	  (NatInd, Pi("P", Pi("_", Nat, Set),
+    	               Pi("_", App(Var(0), Zero),
+    	                   Pi("_", Pi("n", Nat,
+    	                		   	   Pi("_", App(Var(2), Var(0)),
+    	                		   		   App(Var(3), Succ(Var(1))))),
+    	                       Pi("n", Nat,
+    	                           App(Var(3), Var(0)))))))
       }
       //Bools
       case (Bool, None) => {

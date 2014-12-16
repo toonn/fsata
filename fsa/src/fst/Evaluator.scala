@@ -112,9 +112,9 @@ class Evaluator {
 	  try{
 	  t match {
 		  //SAN NatInd
-		  case App(App(App(App(NatInd,p),base),step),Zero) => println("natindbase"); Some(eval(base)) // E-natIndZero
+		  case App(App(App(App(NatInd,p),base),step),Zero) => Some(eval(base)) // E-natIndZero
 		  case App(App(App(App(NatInd,p),base),step),Succ(n)) 			// E-natIndNotZero
-		  	=> println("natindstep"); Some(termSubstTop(eval(App(App(App(App(NatInd,p),base),step),n)), eval(App(step, n))))
+		  	=> Some(App(eval(App(step, n)), eval(App(App(App(App(NatInd,p),base),step),n))))
 		  	
 		  	//SAN BoolElim
 		  case App(App(App(BoolElim,True),t2),t3) => Some(t2) //E-BoolElimTrue
