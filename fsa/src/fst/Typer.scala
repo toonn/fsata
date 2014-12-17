@@ -122,6 +122,21 @@ class Typer(eval: Evaluator) {
       }
       
       case (App(f, t), None) => {
+        /* Dit werkt nog niet, was een poging om inference op app sterker te maken.
+        val (t1, t_ty) = tcTerm(t, None, ctx)
+        eval.eval(f) match {
+          case Lam(name, None, body) => {
+            val (body1, body_ty) = tcTerm(eval.termSubstTop(t1, body), None, ctx)
+            tcTerm(f, Some(Pi("_", t_ty, body_ty)), ctx)
+            (App(f, t), body_ty)
+          }
+          case Lam(name, Some(t_ty), body) => {
+            val (body1, body_ty) = tcTerm(eval.termSubstTop(t1, body), None, ctx)
+            tcTerm(f, Some(Pi("_", t_ty, body_ty)), ctx)
+            (App(f, t), body_ty)
+          }
+          case _ => throw new ExpectedPi(f, typeOf(f, ctx), toNames(ctx))
+        }*/
         //println("App: " + f + " $ " + t)
         val (f1, ty1) = tcTerm(f, None, ctx)
         //println("f_ty: " + f1 + " : " + ty1)
