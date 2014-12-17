@@ -18,7 +18,8 @@ class DepTest extends FunSuite with ShouldMatchers {
 	var i = 1;
 
 	def evaluateAndTypeTest(in:String, ty: Term, out: Term) = {
-        val nr = i;  
+        val nr = i;
+        if (nr == 67) {
 	    test("type and evaluate expression " + i) {
             System.out.print(nr + " " + "Parsing expression: " + in)
             val e : Term = parser.parseTerm(in);
@@ -40,7 +41,7 @@ class DepTest extends FunSuite with ShouldMatchers {
             } finally {
               println("\n\n=======================================\n")
             }
-        }
+        }}
         i = i + 1
     }
 		

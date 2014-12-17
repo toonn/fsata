@@ -2,7 +2,7 @@ package fst
 
 /**
  *
- * @author Akkermans Sven and Nolten Toon
+ * @author Akkermans Sven and Toon Nolten
  */
 
 import Syntax._

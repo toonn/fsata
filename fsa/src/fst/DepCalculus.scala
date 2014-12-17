@@ -5,7 +5,7 @@ import Syntax._
 /**
  * This is the solution template for your dependently typed calculus. 
  * 
- * @author Akkermans Sven and Nolten Toon
+ * @author Akkermans Sven and Toon Nolten
  */
 class DepCalculus extends Calculus[Term,Term,Unit] {
   

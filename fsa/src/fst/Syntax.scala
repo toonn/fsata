@@ -167,15 +167,11 @@ object Syntax {
 	// TODO, T: check
 	case class First(t: Term) extends Term {
 	  override def atomic = false
-	  override def prettyPrint(names: Names) = t match {
-	    case Pair(a, b) => "fst" + a.prettyPrint(names)
-	  }	  
+	  override def prettyPrint(names: Names) = "fst " + t.prettyPrint(names)  
 	}
 	case class Second(t: Term) extends Term {
 	  override def atomic = false
-	  override def prettyPrint(names: Names) = t match {
-	    case Pair(a, b) => "snd" + b.prettyPrint(names)
-	  }
+	  override def prettyPrint(names: Names) = "snd " + t.prettyPrint(names)
 	}
 		//SAN: Unit type
 	case object TUnit extends Term {
