@@ -2,7 +2,7 @@ package fst
 
 /**
  *
- * @author Akkermans Sven and Toon Nolten
+ * @author Sven Akkermans and Toon Nolten
  */
 
 import Syntax._
@@ -18,23 +18,18 @@ case class UnequalTerms(t1: Term, t2: Term, names: Names) extends TypeException(
 case class ExpectedPi(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Pi type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-//SAN: added
 case class ExpectedNat(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Nat type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-//SAN: added
 case class ExpectedBool(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Bool type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-//SAN: Added
 case class ExpectedPair(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Pair for " + t.prettyPrint(names) + ",\n it's type is " + ty.prettyPrint(names)
 }
-//SAN: Added
 case class ExpectedSet(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Set type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-
 case class ExpectedSigma(t: Term, ty: Term, names: Names) extends TypeException() {
   override def errorMessage = "Expected Sigma type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
@@ -42,11 +37,6 @@ case class RequiresAnnotation(t: Term, names: Names) extends TypeException() {
   override def errorMessage = "Term requires type annotation: \n" + t.prettyPrint(names)
 }
 
-/**
- * Sven's Additional Notes (SAN):
- *
- * Types of the variables in the context are allowed to depend on the values of the variables before it.
- */
 class Typer(eval: Evaluator) {
 
   def shiftContext(ctx: Context, d: Int, c: Int): Context = ctx match {
@@ -59,14 +49,11 @@ class Typer(eval: Evaluator) {
     eval.shift(t, d + 1, 0)
   }
 
-  //SAN: This function is incomplete and just checks if two terms have the same syntax.
-  //	Add an evaluator to the language and use it in the implementation of this function.
   def equalTerms(t1: Term, t2: Term, ctx: Context): Boolean = {
     val nctx = shiftContext(ctx, 1, 0)
     (eval.eval(t1), eval.eval(t2)) match {
       case (et1, et2) if et1 == et2 => true
 
-      //SAN Addition
       case (Lam(_, None, b1), Lam(_, None, b2))
       	if equalTerms(b1, b2, nctx) => true
       case (Lam(_, Some(ty1), b1), Lam(_, Some(ty2), b2))
@@ -100,15 +87,13 @@ class Typer(eval: Evaluator) {
    * Note that there should be a rule to switch from checking mode to inference mode when necessary.
    *
    */
-  //SAN:		If a is None, the typechecker is in inference mode.
   def tcTerm(t: Term, a: Option[Term], ctx: Context): (Term, Term) = {
     (t, a.map[Term](eval.eval)) match {
-      // SAN: Type checking for variable.
-      case (Var(d), None) => {
+
+    	case (Var(d), None) => {
         (Var(d), lookupType(d, ctx))
       }
-      // SAN: Type checking for abstraction (lambda expression) unannoted version (I think)
-      //		Has to check that argument type is of type Set    
+    	
       case (Lam(n1, ty1, t), Some(ty)) => {
     	  println("" + Lam(n1, ty1, t) + " -l- " + ty)
     	  eval.eval(ty) match {
@@ -128,38 +113,37 @@ class Typer(eval: Evaluator) {
     	  	case ty1 => throw new ExpectedPi(ty, ty1, toNames(ctx)) //TODO
     	  }
       }
-      // SAN: Type checking for abstraction (lambda expression) annoted version
-      //		Has to check that argument type is of type Set
+      
       case (Lam(name, Some(a), t), None) => {
         println("" + Lam(name, Some(a), t) + " -l- " + None)
         val (body, c) = tcTerm(t, None, (name, a) :: ctx)
         println("" + Lam(name, Some(a), t) + " _l_ " + None)
         (Lam(name, Some(a), body), Pi(name, a, c))
       }
-      // SAN: Type checking for application
+      
       case (App(f, t), None) => {
         //println("App: " + f + " $ " + t)
-        val (f1, ty1) = tcTerm(f, None, ctx) //SAN: type of f, ty1, shoud be equal to Pi type (name, a,b).
+        val (f1, ty1) = tcTerm(f, None, ctx)
         //println("f_ty: " + f1 + " : " + ty1)
         eval.eval(ty1) match {
-          case Pi(name, a, b) => { //SAN: in that case, arg of t should be type a and app f t has type the value of the Pi type
-            val (t1, _) = tcTerm(t, Some(a), ctx) //		for the argument the function was applied to
+          case Pi(name, a, b) => { 
+            val (t1, _) = tcTerm(t, Some(a), ctx)
             (App(f1, t1), eval.termSubstTop(t1, b))
           }
           case _ => {
-            throw new ExpectedPi(f, ty1, toNames(ctx)) //TODO
+            throw new ExpectedPi(f, ty1, toNames(ctx))
           }
         }
       }
-      // SAN: Type checking for dependent function
+      
       case (Pi(name, a, b), None) => {
-//        val uname = if (name == "_") { uniqueName(name, toNames(ctx)) }
+//        val uname = if (name == "_") { uniqueName(name, toNames(ctx)) } //TODO
 //        			else { name }
-        val (a1, _) = tcTerm(a, Some(Set), ctx) //SAN: a1 has to be a type
-        val (b1, _) = tcTerm(b, Some(Set), (name, a1) :: ctx) //SAN: b1 has to be a type with (x:a1) added to the context
+        val (a1, _) = tcTerm(a, Some(Set), ctx) 
+        val (b1, _) = tcTerm(b, Some(Set), (name, a1) :: ctx)
         (Pi(name, a1, b1), Set)
       }
-      // SAN: Type checking for Set
+      
       case (Set, None) => {
         (Set, Set)
       }
@@ -177,9 +161,6 @@ class Typer(eval: Evaluator) {
         (t1, a1)
       }
 
-      ////////////////////////////////////////
-      //SAN  Additions: underneath this line//
-      ////////////////////////////////////////
       //Nats
       case (Nat, None) => {
         (Nat, Set)
@@ -220,7 +201,8 @@ class Typer(eval: Evaluator) {
           }
         }
       }
-      //NatInd : SAN Incomplete, I think
+      
+      //NatInd
       case (NatInd, None) => {
          //(P : Nat -> Set) -> P 0 -> ((n : Nat) -> P n -> P (succ n)) -> (n : Nat) -> P n
     	  (NatInd, Pi("P", Pi("_", Nat, Set),
@@ -231,6 +213,7 @@ class Typer(eval: Evaluator) {
     	                       Pi("n", Nat,
     	                           App(Var(3), Var(0)))))))
       }
+      
       //Bools
       case (Bool, None) => {
         (Bool, Set)
@@ -258,8 +241,7 @@ class Typer(eval: Evaluator) {
           }
         }
       }
-      //SAN: Sigma types
-      //TODO: Some mistakes here, tricky
+      //Sigma types
       case (Sigma(v, a, b), None) => {
         val (a1, _) = tcTerm(a, Some(Set), ctx)
         val (b1, _) = tcTerm(b, Some(Set), (v, a1) :: ctx)
@@ -287,14 +269,14 @@ class Typer(eval: Evaluator) {
           case (_, ty) => throw new ExpectedPair(t, ty, toNames(ctx))
         }
       }
-      //SAN: Bools
+      //Bools
       case (TUnit, None) => {
         (TUnit, Set)
       }
       case (Unit, None) => {
         (Unit, TUnit)
       }
-      //SAN: Let expression (*INCOMPLETE*)
+      //Let expression
       case (Let(name: String, ty: Term, term: Term, body: Term), None) => {
         val (ty1, Set) = tcTerm(ty, Some(Set), ctx)
         val (term1, term_ty) = tcTerm(term, Some(ty1), ctx)
@@ -305,14 +287,14 @@ class Typer(eval: Evaluator) {
         println("\nbody1: " + body1)
         (Let(name, ty1, term1, body1), body_ty)
       }
-      //SAN: TArr, (*INCOMPLETE*)
+      //TArr
       case (TArr(t1: Term, t2: Term), None) => {
         val (tt1, tty1) = tcTerm(t1, None, ctx)
         val (tt2, tty2) = tcTerm(t2, None, ctx)
         (TArr(t1, t2), Set)
       }
 
-      //SAN: Identity types (*INCOMPLETE*)
+      //Identity types
       case (I, None) => {
        // (A : Set) -> A -> A -> Set
         (I, Pi("A", Set,
@@ -341,7 +323,7 @@ class Typer(eval: Evaluator) {
         			         
       }
       
-      //SAN: BoolElim (*INCOMPLETE*)
+      //BoolElim
       case (BoolElim, None) => {
         //(P : Bool -> Set) -> P true -> P false -> (b : Bool)-> P b        
         (BoolElim, Pi("P", Pi("_", Bool, Set),
@@ -351,7 +333,6 @@ class Typer(eval: Evaluator) {
         					       App(Var(3),Var(0)))))))
       }
 
-      //End of SAN additions
       case (t, None) => throw new RequiresAnnotation(t, toNames(ctx))
     }
   }

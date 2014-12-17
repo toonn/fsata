@@ -3,7 +3,7 @@ package fst
 import scala.xml.PrettyPrinter
 /**
  * 
- * @author Akkermans Sven and Toon Nolten
+ * @author Sven Akkermans and Toon Nolten
  */
 object Syntax {
 
@@ -33,12 +33,6 @@ object Syntax {
 	  }
 	}
   
-	/**
-	 * Sven's Additional Notes (SAN):	 
-	 * 
-	 *  No distinguishment brtween types and terms
-	 *  Types are a subset of terms.
-	 */	
 	sealed abstract class Term {
 	  def atomic : Boolean = true
 	  def prettyPrint(): String = prettyPrint(List())
@@ -46,20 +40,11 @@ object Syntax {
 	  def prettyPrintP(names: Names): String = if (atomic) prettyPrint(names) else "(" + prettyPrint(names) + ")"
 	}
 	
-	/**
-	 * Sven's Additional Notes (SAN):
-	 * 
-	 * This section corresponds to Basic Syntax from assignment.
-	 */
 	// Basic language
 	case class Var(i : Int) extends Term { 
 	  override def prettyPrint(names: Names) = names(i)
 	}
 	
-	//SAN: Abstraction: \ x : a . t
-	//		'name' is the Symbol (variable), t is the body (term)
-	//		'a' is the type of the variable bound and can be omitted
-	//				similar as unannotated lambdas: \ x . t
 	case class Lam(name : String, a : Option[Term], t : Term) extends Term { 
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = {
@@ -78,7 +63,6 @@ object Syntax {
 	  }
 	}
 	
-	// SAN: New wrt STLC 'dependent function types'
 	case class Pi(name: String, a : Term, b : Term) extends Term {
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = {
@@ -92,7 +76,6 @@ object Syntax {
 	  }
 	}
 	
-	// SAN: New wrt STLC 'type of types'
 	case object Set extends Term {
 	  override def prettyPrint(names: Names) = "Set"
 	}
@@ -107,10 +90,6 @@ object Syntax {
 	  override def prettyPrint(names: Names) = "notImplemented"
 	}
 	
-    ////////////////////////////////////////
-    //SAN  Additions: underneath this line//
-    ////////////////////////////////////////		
-		//SAN: the nats
 	case object Nat extends Term {
 	  override def prettyPrint(names: Names) = "Nat"
 	}
@@ -137,7 +116,6 @@ object Syntax {
 	  override def prettyPrint(names: Names) = 
 		"natInd"
 	}
-		//SAN: the bools
 	case object Bool extends Term {
 	  override def prettyPrint(names: Names) = "Bool"
 	}
@@ -152,7 +130,6 @@ object Syntax {
 	  override def prettyPrint(names: Names) = 
 		  "if " + c.prettyPrint(names) + " then " + e1.prettyPrint(names) + " else " + e2.prettyPrint(names)				  
 	}
-		//SAN: Sigma types
 	case class Sigma(v: String, a: Term, b: Term) extends Term {
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = 
@@ -163,8 +140,6 @@ object Syntax {
 	  override def prettyPrint(names: Names) = 
 		  "(" + s.prettyPrint(names) + "," + t.prettyPrint(names) + ")"			  
 	}
-	
-	// TODO, T: check
 	case class First(t: Term) extends Term {
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = "fst " + t.prettyPrint(names)  
@@ -173,30 +148,23 @@ object Syntax {
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = "snd " + t.prettyPrint(names)
 	}
-		//SAN: Unit type
 	case object TUnit extends Term {
 	  override def prettyPrint(names: Names) = "Unit"
 	}
 	case object Unit extends Term {
 	  override def prettyPrint(names: Names) = "unit"
 	}
-	
-	//SAN: Let
 	case class Let(v: String, ty: Term, vi: Term, t: Term) extends Term{
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = 
 		  "let" + v + " : " + ty.prettyPrint(names) + " = " + 
 				  vi.prettyPrint(names) + " in " + t.prettyPrint(names)
 	}
-	
-	//SAN: TArr
 	case class TArr(t1: Term, t2: Term) extends Term{
 	  override def atomic = false
 	  override def prettyPrint(names: Names) = 
 		  "(" + t1.prettyPrint(names) + " -> " + t2.prettyPrint(names) + " )"
 	}
-	
-	//SAN Identity types
 	case object I extends Term {
 	  override def prettyPrint(names: Names) = "I"
 	}
@@ -206,7 +174,6 @@ object Syntax {
 	case object Subst extends Term {
 	  override def prettyPrint(names: Names) = "subst"
 	}
-		//BoolELim
 	case object BoolElim extends Term {
 	  override def prettyPrint(names: Names) = "boolElim"
 	}
