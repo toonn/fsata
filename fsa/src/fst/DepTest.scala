@@ -19,7 +19,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 
 	def evaluateAndTypeTest(in:String, ty: Term, out: Term) = {
         val nr = i;
-        if (nr == 67) {
+        if (/*nr == 67*/ true) {
 	    test("type and evaluate expression " + i) {
             System.out.print(nr + " " + "Parsing expression: " + in)
             val e : Term = parser.parseTerm(in);
@@ -120,7 +120,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest("""(\A:Set.\x:A.x) ((A : Set) -> A -> A) (\A:Set.\x:A.x) Nat 0""",calc.mkNat,calc.mkZero);
 	
 	//church encodings
-		//test 44 onze toevoeging begint hier
+		//test 44. Vanaf hier beginnen enkele van onze extra church bool testen gedaan.
 	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
 	                       let tru : bool = """ + calc.truDefinition + """ in
 	                       tru Bool true false
@@ -160,7 +160,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	                       let bool_eq : bool -> bool -> bool = """ + calc.boolEqDefinition + """ in
 	                       (bool_eq tru tru) Bool true false
 	                       """, calc.mkBool, calc.mkTrue)
-	// 50 Onze toevoeging stopt hier
+	// 50. Vanaf hier zijn onze extra church bool testen gedaan.
 	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
 	                       let tru : bool = """ + calc.truDefinition + """ in 
 	                       let fls : bool = """ + calc.flsDefinition + """ in
@@ -172,7 +172,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	                       toBool (and (or fls (not fls)) (bool_eq tru tru))
 	                    """, calc.mkBool, calc.mkTrue) 
 	
-	// 51 Onze toevoeging voor nats
+	// 51 Onze toevoeging voor nats.
 	evaluateAndTypeTest("""let nat : Set = """ + calc.churchNatDefinition + """ in
 	                       let ze : nat = """ + calc.zeDefinition + """ in
 	                       ze Nat 0 (\a . succ a)
@@ -183,7 +183,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	                       let toNat : nat -> Nat = \n. n Nat 0 (\x. succ x) in
 	                       toNat (su ze)
 	                    """, calc.mkNat, calc.mkNatLit(1))
-	// 53 Onze toevoeging voor nats stopt hier
+	// 53 Onze toevoeging voor nats stopt hier.  
 	evaluateAndTypeTest("""let nat : Set = """ + calc.churchNatDefinition + """ in
 	                       let ze : nat = """ + calc.zeDefinition + """ in
 	                       let su : nat -> nat = """ + calc.suDefinition + """ in

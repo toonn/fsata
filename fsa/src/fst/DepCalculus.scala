@@ -5,7 +5,7 @@ import Syntax._
 /**
  * This is the solution template for your dependently typed calculus. 
  * 
- * @author Akkermans Sven and Toon Nolten
+ * @author Sven Akkermans and Toon Nolten
  */
 class DepCalculus extends Calculus[Term,Term,Unit] {
   
@@ -51,12 +51,12 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   override def mkFirst(t: Term) : Term = First(t)
   override def mkSecond(t: Term) : Term = Second(t)
     
-  // singleton types //SAN: Optional
+  // singleton types
   override def mkI = I
   override def mkRefl = Refl
   override def mkSubst = Subst
   
-  // dependent if //SAN: Optional
+  // dependent if
   override def mkBoolElim = BoolElim
   
     
@@ -81,26 +81,18 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
     
   def zeDefinition = """\A .\z . \s . z"""
   def suDefinition = """\n . \A . \z . \s . s (n A z s)"""
-  def isZeroDefinition = """\n . n bool tru (\_ . fls)""" // This assumes bool, tru and fls are defined in a let beforehand
-  def plusDefinition = """\a . \b . a nat (b nat ze su) su""" // This assumes nat, ze and su are defined in a let beforehand
+  def isZeroDefinition = """\n . n bool tru (\_ . fls)""" // This assumes bool, tru and fls are defined in a let beforehand, allowed, see forum.
+  def plusDefinition = """\a . \b . a nat (b nat ze su) su""" // This assumes nat, ze and su are defined in a let beforehand, allowed, see forum.
     
-  // If you make the optional exercise to define times using the natInd primitive, do it here...
-  		//SAN: Atm just the natInd definition of plus. I've no clue how to do his.
   def timesDefinition = """natInd (\n: Nat . Nat -> Nat) (\_ : Nat . 0) 
     								(\n : Nat . \h : Nat -> Nat . \v: Nat . plus (h v) v)"""
-  // If you make the optional exercise to define pred2 using the natInd primitive, do it here...
-    	//SAN: Atm just the definition of plus. I've no clue how to dot his.
   def pred2Definition = """natInd (\n: Nat . Nat) (0)
     								(\n : Nat . \h : Nat . n)"""
-  // If you make the optional exercise to define the proof that 0 is a right zero for the function plus 
-  // (assume that plus is already defined)
   def proofTerm = """natInd (\n : Nat . I Nat (plus n 0) n)
     						(refl Nat 0)
     						(\n : Nat . \hyp : I Nat (plus n 0) n .
     							subst Nat (plus n 0) n
     								(\t : Nat . I Nat (succ (plus n 0)) (succ t)) (hyp)
     								(refl Nat (succ (plus n 0))))"""
-  // If you make the optional exercise to construct a value of type ((b : Bool) -> if b then Nat else Bool) 
-  // using the boolElim primitive, do it here...
   def ifXThenNatElseBoolDefinition = """boolElim (\n: Bool . if n then Nat else Bool) 0 true"""
 }

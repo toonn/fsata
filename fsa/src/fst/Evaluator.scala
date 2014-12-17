@@ -5,30 +5,27 @@ import java.util.NoSuchElementException
 
 class Evaluator {
 	
-	//SAN TODO (*INCOMPLETE*)
-	//	we could skip the terms that don't have anything to shift.
+	//	we could skip the terms that don't have anything to shift, for clarity we don't.
 	def shift(t:Term, d:Int, c:Int): Term = t match {
 
 	  case Var(i) => if (i<c) Var(i) else Var(i+d)
 	  
-	  //SAN: Regular syntax
 	  case Lam(name, ty, t) => Lam(name, ty, shift(t, d, c+1))
       case App(t1, t2) =>  App(shift(t1, d, c), shift(t2, d, c))  
       
-      //SAN: Added special syntax
       case Let(name, ty, t, b) => Let(name, ty,t, shift(b,d,c+1))
       case TArr(t1,t2) => TArr(shift(t1, d, c),shift(t2, d, c))
       case Pi(name,t1,t2) => Pi(name,shift(t1, d, c),shift(t2, d, c+1))
       case Set => Set
       case Ann(t1,t2) => Ann(shift(t1, d, c),shift(t2, d, c))
       
-	  //SAN: Bools
+	  //Bools
       case Bool => Bool
       case True => True 
       case False => False
       case IfThenElse(t1, t2, t3) => IfThenElse(shift(t1, d, c), shift(t2, d, c), shift(t3, d, c)) 
 
-	  //SAN: Nats
+	  //Nats
 	  case Nat => Nat
 	  case Zero => Zero
       case Succ(t1) => Succ(shift(t1, d, c))
@@ -36,11 +33,11 @@ class Evaluator {
       case IsZero(t1) => IsZero(shift(t1, d, c))
       case NatInd => NatInd
       
-      //SAN: Unit
+      //Unit
       case TUnit => TUnit
       case Unit => Unit
       
-      //SAN: Sigma types
+      //Sigma types
       case Sigma(name,t1,t2) => Sigma(name,shift(t1,d,c), shift(t2,d,c+1))
       case Pair(t1,t2) => Pair(shift(t1, d, c),shift(t2, d, c))
       case First(t1) => First(shift(t1, d, c))
@@ -49,17 +46,14 @@ class Evaluator {
 	  case _      => t
 	}
 
-	//SAN TODO: add other cases (*incomplete*)
-	//	we could skip the terms that don't have anything to subst.
+	//	we could skip the terms that don't have anything to subst, for clarity we don't.
 	def subst(t:Term, v:Int, s:Term) : Term = t match {
 	  case Var(i) => if (i==v) s else Var(i)
 	  
-	   //SAN: Regular syntax
 	  case Lam(name, None, t1) => Lam(name, None, subst(t1, v+1, shift(s,1,0)))
 	  case Lam(name, Some(ty), t1) => Lam(name, Some(subst(ty,v,s)), subst(t1, v+1, shift(s,1,0)))
       case App(t1, t2) =>  App(subst(t1, v, s), subst(t2, v, s))  
       
-      //SAN: Added special syntax
       case Let(name, t1, t2, t3) => Let(name, subst(t1, v, s),subst(t2, v, s),
     		  							subst(t3,v+1,shift(s,1,0)))
       case TArr(t1,t2) => TArr(subst(t1, v, s),subst(t2, v, s))
@@ -67,13 +61,13 @@ class Evaluator {
       case Set => Set
       case Ann(t1,t2) => Ann(subst(t1, v, s),subst(t2, v, s))
       
-	  //SAN: Bools
+	  //Bools
       case Bool => Bool
       case True => True 
       case False => False
       case IfThenElse(t1, t2, t3) => IfThenElse(subst(t1, v, s), subst(t2, v, s), subst(t3, v, s)) 
 
-	  //SAN: Nats
+	  //Nats
 	  case Nat => Nat
 	  case Zero => Zero
       case Succ(t1) => Succ(subst(t1, v, s))
@@ -81,11 +75,11 @@ class Evaluator {
       case IsZero(t1) => IsZero(subst(t1, v, s))
       case NatInd => NatInd
       
-      //SAN: Unit
+      //Unit
       case TUnit => TUnit
       case Unit => Unit
       
-      //SAN: Sigma types
+      //Sigma types
       case Sigma(name,t1,t2) => Sigma(name,subst(t1,v,s), subst(t2,v+1,shift(s,1,0)))
       case Pair(t1,t2) => Pair(subst(t1, v, s),subst(t2, v, s))
       case First(t1) => First(subst(t1, v, s))
@@ -106,28 +100,25 @@ class Evaluator {
      *  We are free to experiment with different evaluation strategies( call-by-value, by-name-, by-need...)
      */
     
-    //TODO: add other cases
 	def eval1[R](t:Term): Option[Term] = {
-	  //SAN: I added the nosuchelementexception try/catch
 	  try{
 	  t match {
-		  //SAN NatInd
+		  //NatInd
 		  case App(App(App(App(NatInd,p),base),step),Zero) => Some(eval(base)) // E-natIndZero
 		  case App(App(App(App(NatInd,p),base),step),Succ(n)) 			// E-natIndNotZero
 		  	=> Some(App(eval(App(step, n)), eval(App(App(App(App(NatInd,p),base),step),n))))
 		  	
-		  	//SAN BoolElim
+		  //BoolElim
 		  case App(App(App(App(BoolElim,p),ptrue),pfalse),True) => Some(ptrue) //E-BoolElimTrue
 		  case App(App(App(App(BoolElim,p),ptrue),pfalse),False) => Some(pfalse) //E-BoolElimFalse
 		  case App(App(App(App(BoolElim,p),ptrue),pfalse),b) => Some(App(App(App(App(BoolElim,p),ptrue),pfalse),eval(b))) //E-BoolElim
 
-		  	//SAN Identity
-		  		//the a and b are the A from the assignment and basically indicate type. Unsure if what I'm doing is correct
+		  //Identity
 		  case App(App(App(App(App(App(Subst,a),x),y),p),App(App(Refl,b),z)),px) if a == b => Some(px)
-		  		//SAN basic
+
 		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
 		  
-				  //SAN Basic E-rules
+		  //Basic E-rules
 		  case Lam(x,t1,t2) if eval1(t2) != None => Some(Lam(x,t1,eval(t2))) //E-Abs1
 		  case Lam(x,t1,t2) if eval1(t1.get) != None 
 		  				=> Some(Lam(x,eval1(t1.get),t2)) //E-Abs2
@@ -136,7 +127,7 @@ class Evaluator {
 		  case App(t1,t2) if eval1(t2) != None => Some(App(t1,eval(t2))) //E-App1
 		  case App(t1,t2) if eval1(t1) != None => Some(App(eval(t1),t2)) //E-App2
 		 
-		  		  //SAN  Bools
+		  //Bools
 		  case IfThenElse(True,t2,t3) => Some(t2) //E-IfTrue
 		  case IfThenElse(False,t2,t3) => Some(t3)	//E-IfFalse
 		  case IfThenElse(t1,t2,t3) if eval1(t1) != None 
@@ -146,7 +137,7 @@ class Evaluator {
 		  case IfThenElse(t1,t2,t3) if eval1(t3) != None 
 		  			=> Some(IfThenElse(t1,t2,eval1(t3).get))// E-If3
 		  
-		  		//SAN Nats
+		  //Nats
 		  case Succ(t) if eval1(t) != None => Some(Succ(eval(t))) // E-succ
 		  case Pred(Zero) => Some(Zero) //E-PredZero
 		  case Pred(Succ(t)) => Some(t)	//E-PredSucc
@@ -155,13 +146,13 @@ class Evaluator {
 		  case IsZero(Succ(t)) => Some(False)	// E-IsZeroSucc
 		  case IsZero(t) if eval1(t) != None => Some(IsZero(eval(t)))// E-IsZero
 		  
-		  		//SAN Sigma types
+		  //Sigma types
 		  case First(Pair(s,t)) => Some(s)	//E-Fst
 		  case Second(Pair(s,t)) => Some(t)	//E-Snd
-		  case First(t) if eval1(t) != None => Some(First(eval(t)))
-		  case Second(t) if eval1(t) != None => Some(Second(eval(t)))
+		  //case First(t) if eval1(t) != None => Some(First(eval(t))) //TODO delete?
+		  //case Second(t) if eval1(t) != None => Some(Second(eval(t))) //TODO delete?
 		  
-		  		//SAN Let
+		  // Let
 		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let
 		  
 		  case _ => None
