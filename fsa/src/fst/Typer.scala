@@ -95,16 +95,16 @@ class Typer(eval: Evaluator) {
       }
     	
       case (Lam(n1, ty1, t), Some(ty)) => {
-    	  println("" + Lam(n1, ty1, t) + " -l- " + ty)
+    	  //println("" + Lam(n1, ty1, t) + " -l- " + ty)
     	  eval.eval(ty) match {
     	  	case Pi(n2, b, c) =>
     	  		ty1 match {
     	  			case None => val (body, _) = tcTerm(t, Some(c), (n1, b) :: ctx)
-    	  						println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
+    	  						//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
     	  						(Lam(n1, Some(b), body), Pi(n2, b, c))
     	  			case Some(l_ty) => if (equalTerms(l_ty, b, ctx)) {
     	  									val (body, _) = tcTerm(t, Some(c), (n1, b) :: ctx)
-    	  									println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
+    	  									//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
     	  									(Lam(n1, Some(b), body), Pi(n2, b, c))
     	  								} else {
     	  								  throw new UnequalTerms(l_ty, b, toNames((n1, b) :: ctx))
@@ -115,9 +115,9 @@ class Typer(eval: Evaluator) {
       }
       
       case (Lam(name, Some(a), t), None) => {
-        println("" + Lam(name, Some(a), t) + " -l- " + None)
+        //println("" + Lam(name, Some(a), t) + " -l- " + None)
         val (body, c) = tcTerm(t, None, (name, a) :: ctx)
-        println("" + Lam(name, Some(a), t) + " _l_ " + None)
+        //println("" + Lam(name, Some(a), t) + " _l_ " + None)
         (Lam(name, Some(a), body), Pi(name, a, c))
       }
       
@@ -165,17 +165,6 @@ class Typer(eval: Evaluator) {
       case (Ann(a, t), None) => {
         tcTerm(t, Some(a), ctx)
       }
-      case (t, Some(a)) => {
-        println("\n" + t + " -- " + a)
-        val (tt: Term, at) = tcTerm(t, None, ctx)
-        val (t1: Term, a1) = (eval.eval(tt), eval.eval(at))
-        println("\n" + t1 + " __ " + a1)
-        if (!equalTerms(a, a1, ctx)) {
-          throw new UnequalTerms(t, t1, toNames(ctx))
-        }
-        (t1, a1)
-      }
-
       //Nats
       case (Nat, None) => {
         (Nat, Set)
@@ -264,7 +253,7 @@ class Typer(eval: Evaluator) {
       }
       case (Pair(s, t), Some(Sigma(v, a , b))) => {
         val (s1, s_ty) = tcTerm(s, Some(a), ctx)
-        val (t1, t_ty) = tcTerm(t, Some(b), (v, a) :: ctx)
+        val (t1, t_ty) = tcTerm(t, Some(eval.termSubstTop(s1, b)), ctx)
         (Pair(s1, t1), Sigma(v, s_ty, t_ty))
       }
       case (Pair(s, t), None) => {
@@ -280,10 +269,30 @@ class Typer(eval: Evaluator) {
       }
       case (Second(t), None) => {
         tcTerm(t, None, ctx) match {
-          case (_, Sigma(v, a, b)) => (Second(t), eval.termSubstTop(a, b))
+          case (_, Sigma(v, a, b)) => (Second(t), eval.termSubstTop(First(t), b))
           case (_, ty) => throw new ExpectedPair(t, ty, toNames(ctx))
         }
       }
+      
+      /*case (Let(name: String, ty: Term, term: Term, body: Term), Some(a)) => {
+        val (ty1, Set) = tcTerm(ty, Some(Set), ctx)
+        val (term1, term_ty) = tcTerm(term, Some(ty1), ctx)
+        val (body1, body_ty) = tcTerm(eval.termSubstTop(term1, body), Some(a), ctx)
+        (Let(name, ty1, term1, body1), body_ty)
+      }*/
+
+      case (t, Some(a)) => {
+        //println("\n" + t + " -- " + a)
+        val (tt: Term, at) = tcTerm(t, None, ctx)
+        val (t1: Term, a1) = (eval.eval(tt), eval.eval(at))
+        //println("\n" + t1 + " __ " + a1)
+        if (!equalTerms(a, a1, ctx)) {
+          throw new UnequalTerms(t, t1, toNames(ctx))
+        }
+        (t1, a1)
+      }
+
+
       //Bools
       case (TUnit, None) => {
         (TUnit, Set)
@@ -296,10 +305,6 @@ class Typer(eval: Evaluator) {
         val (ty1, Set) = tcTerm(ty, Some(Set), ctx)
         val (term1, term_ty) = tcTerm(term, Some(ty1), ctx)
         val (body1, body_ty) = tcTerm(eval.termSubstTop(term1, body), None, ctx)
-        println("\nty1: " + ty1)
-        println("\nterm1: " + term1)
-        println("\nbody: " + body)
-        println("\nbody1: " + body1)
         (Let(name, ty1, term1, body1), body_ty)
       }
       //TArr

@@ -107,16 +107,18 @@ class Evaluator {
 		  case App(App(App(App(NatInd,p),base),step),Zero) => Some(eval(base)) // E-natIndZero
 		  case App(App(App(App(NatInd,p),base),step),Succ(n)) 			// E-natIndNotZero
 		  	=> Some(App(eval(App(step, n)), eval(App(App(App(App(NatInd,p),base),step),n))))
+		  case App(App(App(App(NatInd,p),base),step),n) if eval1(n) != None			// congruence
+		  	=> Some(App(App(App(App(NatInd,p),base),step),eval(n)))
 		  	
 		  //BoolElim
 		  case App(App(App(App(BoolElim,p),ptrue),pfalse),True) => Some(ptrue) //E-BoolElimTrue
 		  case App(App(App(App(BoolElim,p),ptrue),pfalse),False) => Some(pfalse) //E-BoolElimFalse
-		  case App(App(App(App(BoolElim,p),ptrue),pfalse),b) => Some(App(App(App(App(BoolElim,p),ptrue),pfalse),eval(b))) //E-BoolElim
+		  case App(App(App(App(BoolElim,p),ptrue),pfalse),b) if eval1(b) != None => Some(App(App(App(App(BoolElim,p),ptrue),pfalse),eval(b))) //E-BoolElim
 
 		  //Identity
 		  case App(App(App(App(App(App(Subst,a),x),y),p),App(App(Refl,b),z)),px) if a == b => Some(px)
 
-		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
+		  case App(Lam(n,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
 		  
 		  //Basic E-rules
 		  case Lam(x,t1,t2) if eval1(t2) != None => Some(Lam(x,t1,eval(t2))) //E-Abs1
@@ -147,12 +149,18 @@ class Evaluator {
 		  case IsZero(t) if eval1(t) != None => Some(IsZero(eval(t)))// E-IsZero
 		  
 		  //Sigma types
+		  case Sigma(name, s, t) if eval1(s) != None => Some(Sigma(name, eval(s), t))
+		  case Sigma(name, s, t) if eval1(t) != None => Some(Sigma(name, s, eval(t)))
+		  /*case Ann(Pair(s, t), Sigma(name, s_ty, t_ty)) if eval1(s_ty) != None => Some(Ann(Pair(s,t), Sigma(name, eval(s_ty), t_ty)))
+  		  case Ann(Pair(s, t), Sigma(name, s_ty, t_ty)) => Some(Ann(Pair(s,t), Pair(s_ty, termSubstTop(s, t_ty))))
+  		  case Ann(Pair(s, t), Pair(s_ty, t_ty)) if eval1(t_ty) != None => Some(Ann(Pair(s, t), Pair(s_ty, eval(t_ty))))*/
 		  case Pair(s, t) if eval1(s) != None => Some(Pair(eval(s), t))
 		  case Pair(s, t) if eval1(t) != None => Some(Pair(s, eval(t)))
 		  case First(Pair(s,t)) => Some(s)	//E-Fst
 		  case Second(Pair(s,t)) => Some(t)	//E-Snd
-		  //case First(t) if eval1(t) != None => Some(First(eval(t))) //TODO delete?
-		  //case Second(t) if eval1(t) != None => Some(Second(eval(t))) //TODO delete?
+		  case First(p) if eval1(p) != None => Some(First(eval(p)))
+		  case Second(p) if eval1(p) != None => Some(Second(eval(p)))
+
 		  
 		  // Let
 		  case  Let(x,t1,t2,t3) => Some(termSubstTop(t2,t3))	//E-Let

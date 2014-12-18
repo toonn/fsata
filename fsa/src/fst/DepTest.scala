@@ -19,11 +19,10 @@ class DepTest extends FunSuite with ShouldMatchers {
 
 	def evaluateAndTypeTest(in:String, ty: Term, out: Term) = {
         val nr = i;
-        if (/*nr == 67*/ true) {
 	    test("type and evaluate expression " + i) {
             System.out.print(nr + " " + "Parsing expression: " + in)
             val e : Term = parser.parseTerm(in);
-            println("\n### Parsed expression: " + e)
+            //println("\n### Parsed expression: " + e)
             System.out.println(" (OK)")
             try {
             	if(ty != null) {
@@ -41,7 +40,7 @@ class DepTest extends FunSuite with ShouldMatchers {
             } finally {
               println("\n\n=======================================\n")
             }
-        }}
+        }
         i = i + 1
     }
 		
@@ -241,12 +240,13 @@ class DepTest extends FunSuite with ShouldMatchers {
 	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in
 	                       let sum : (Sigma[ x : Nat ] Nat) -> Nat = \pair. plus (fst pair) (snd pair) in
 	                       sum (2,3)""", calc.mkNat, calc.mkNatLit(5))
-    evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in 
+	
+	evaluateAndTypeTest("""let plus : Nat -> Nat -> Nat = natInd (\n: Nat. Nat -> Nat) (\x : Nat. x) (\n:Nat.\h:Nat -> Nat.\v:Nat.succ (h v)) in 
                            let Vec : Set -> Nat -> Set = \A. natInd (\n. Set) Unit (\n. \H. Sigma[ _ : A ] H) in
                            let sum : (Sigma[ n : Nat ] Vec Nat n) -> Nat = \pair. natInd (\n. Vec Nat n -> Nat) (\_. 0) (\n. \h. \v. plus (fst v) (h (snd v))) (fst pair) (snd pair) in
                            sum  (3 , (1 , (2 , (3 , unit))))
                         """,calc.mkNat,calc.mkNatLit(6))
-                        
+                   
     // identity types... 
          //test 68
 	evaluateAndTypeTest("""let eqprf2 : I Nat 0 0 = refl Nat 0 in
