@@ -95,15 +95,7 @@ class Evaluator {
       shift(subst(t,0,shift(s,1, 0)),-1,0)
     }
 
-    /**
-     * Sven's Additional Notes (SAN):
-     * 
-     * I think that here we should add that terms are also evaluated during typechecking.
-     *  Typechecker requires support for "evaluation under assumptions", i.e., it must evaluate 'inside' or 'under' abstractions
-     *  We are free to experiment with different evaluation strategies( call-by-value, by-name-, by-need...)
-     */
-    
-	def eval1[R](t:Term): Option[Term] = {
+ 	def eval1[R](t:Term): Option[Term] = {
 	  try{
 	  t match {
 		  //NatInd
