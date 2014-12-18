@@ -147,6 +147,8 @@ class Evaluator {
 		  case IsZero(t) if eval1(t) != None => Some(IsZero(eval(t)))// E-IsZero
 		  
 		  //Sigma types
+		  case Pair(s, t) if eval1(s) != None => Some(Pair(eval(s), t))
+		  case Pair(s, t) if eval1(t) != None => Some(Pair(s, eval(t)))
 		  case First(Pair(s,t)) => Some(s)	//E-Fst
 		  case Second(Pair(s,t)) => Some(t)	//E-Snd
 		  //case First(t) if eval1(t) != None => Some(First(eval(t))) //TODO delete?
