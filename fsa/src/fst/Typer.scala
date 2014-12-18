@@ -1,12 +1,10 @@
 package fst
 
-/**
- *
- * @author Sven Akkermans and Toon Nolten
- */
-
 import Syntax._
 
+/**
+ * @author Sven Akkermans and Toon Nolten
+ */
 abstract class TypeException() extends Exception {
   def errorMessage: String;
   override def toString = errorMessage
@@ -79,21 +77,12 @@ class Typer(eval: Evaluator) {
 
   def typeOf(t: Term, ctx: Context): Term = tcTerm(t, None, ctx)_2
 
-  /**
-   * Sven's Additional Notes (SAN):
-   *
-   * Bi-directional typechecking algorithm
-   * Note that we have to give a directed version of each of the rules of Figure 3 on paper/latex.
-   * Note that there should be a rule to switch from checking mode to inference mode when necessary.
-   *
-   */
   def tcTerm(t: Term, a: Option[Term], ctx: Context): (Term, Term) = {
     (t, a.map[Term](eval.eval)) match {
 
-    	case (Var(d), None) => {
+      case (Var(d), None) => {
         (Var(d), lookupType(d, ctx))
       }
-    	
       case (Lam(n1, ty1, t), Some(ty)) => {
     	  //println("" + Lam(n1, ty1, t) + " -l- " + ty)
     	  eval.eval(ty) match {

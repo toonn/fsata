@@ -159,7 +159,7 @@ class DepTest extends FunSuite with ShouldMatchers {
 	                       let bool_eq : bool -> bool -> bool = """ + calc.boolEqDefinition + """ in
 	                       (bool_eq tru tru) Bool true false
 	                       """, calc.mkBool, calc.mkTrue)
-	// 50. Vanaf hier zijn onze extra church bool testen gedaan.
+	// 50. Vanaf hier stoppen onze extra church bool testen.
 	evaluateAndTypeTest("""let bool : Set = """ + calc.churchBoolDefinition + """ in
 	                       let tru : bool = """ + calc.truDefinition + """ in 
 	                       let fls : bool = """ + calc.flsDefinition + """ in

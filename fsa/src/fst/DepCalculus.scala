@@ -59,7 +59,8 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   // dependent if
   override def mkBoolElim = BoolElim
   
-    
+  
+  //church booleans
   def churchBoolDefinition =  """(A : Set) -> A -> A -> A"""
     
   def truDefinition = """\A . \x . \y . x"""
@@ -76,23 +77,27 @@ class DepCalculus extends Calculus[Term,Term,Unit] {
   									((b1) A)
   									((\x . \y . x)))"""
     
-    
+  // church numerals  
   def churchNatDefinition = """(A : Set) -> A -> (A -> A) -> A"""
     
   def zeDefinition = """\A .\z . \s . z"""
   def suDefinition = """\n . \A . \z . \s . s (n A z s)"""
   def isZeroDefinition = """\n . n bool tru (\_ . fls)""" // This assumes bool, tru and fls are defined in a let beforehand, allowed, see forum.
   def plusDefinition = """\a . \b . a nat (b nat ze su) su""" // This assumes nat, ze and su are defined in a let beforehand, allowed, see forum.
-    
+  
+  //usage of natind  
   def timesDefinition = """natInd (\n: Nat . Nat -> Nat) (\_ : Nat . 0) 
     								(\n : Nat . \h : Nat -> Nat . \v: Nat . plus (h v) v)"""
   def pred2Definition = """natInd (\n: Nat . Nat) (0)
     								(\n : Nat . \h : Nat . n)"""
+  
+  //optional proof theorem 1,  right zero for +  
   def proofTerm = """natInd (\n : Nat . I Nat (plus n 0) n)
     						(refl Nat 0)
     						(\n : Nat . \hyp : I Nat (plus n 0) n .
     							subst Nat (plus n 0) n
     								(\t : Nat . I Nat (succ (plus n 0)) (succ t)) (hyp)
     								(refl Nat (succ (plus n 0))))"""
+  //usage of boolelim
   def ifXThenNatElseBoolDefinition = """boolElim (\n: Bool . if n then Nat else Bool) 0 true"""
 }

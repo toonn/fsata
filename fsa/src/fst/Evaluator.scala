@@ -3,6 +3,9 @@ package fst
 import Syntax._
 import java.util.NoSuchElementException
 
+/**
+ * @author Sven Akkermans and Toon Nolten
+ */
 class Evaluator {
 	
 	//	we could skip the terms that don't have anything to shift, for clarity we don't.
@@ -179,16 +182,11 @@ class Evaluator {
       }
     }
     
-    /**
-     * Sven's Additional Notes (SAN):
-     *
-     * All terms in a DTLC normalize. 
-     */
-    //TODO: implement full beta reduction. I don't think its more than this?
+    // Since we do call-by-value, normalize doesn't have a real purpose and we haven't expanded upon it further. 
     def normalize(t:Term): Term = {
       t match {
         case App( Lam(name, ty, t1), t2) => subst(t2, 1, t1) //Beta-AppAbs
-        //TODO do we also need beta abs, beta app1, beta app2?
+        case _ => t
       }
      
     }

@@ -2,7 +2,6 @@ package fst
 
 import scala.xml.PrettyPrinter
 /**
- * 
  * @author Sven Akkermans and Toon Nolten
  */
 object Syntax {
