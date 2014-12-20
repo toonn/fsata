@@ -84,25 +84,36 @@ class Typer(eval: Evaluator) {
         (Var(d), lookupType(d, ctx))
       }
       
-      case (Lam(name, ty1, t), Some(ty)) => {		//TODO Rereview
+      case (Lam(name, None, t), Some(ty)) => {
     	  //println("" + Lam(n1, ty1, t) + " -l- " + ty)
     	  eval.eval(ty) match {
     	  	case Pi(n2, b, c) =>
-    	  		ty1 match {
-    	  			case None => val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
-    	  						//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
-    	  						(Lam(name, Some(b), body), Pi(n2, b, c))
-    	  			case Some(l_ty) => if (equalTerms(l_ty, b, ctx)) {
-    	  									val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
-    	  									//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
-    	  									(Lam(name, Some(b), body), Pi(n2, b, c))
-    	  								} else {
-    	  								  throw new UnequalTerms(l_ty, b, toNames((name, b) :: ctx))
-    	  								}
-    	  		}
+    	  		 val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
+    	  		//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
+    	  		(Lam(name, Some(b), body), Pi(n2, b, c))
     	  	case ty1 => throw new ExpectedPi(ty, ty1, toNames(ctx))
     	  }
       }
+      
+//      case (Lam(name, ty1, t), Some(ty)) => {		//TODO Rereview
+//    	  //println("" + Lam(n1, ty1, t) + " -l- " + ty)
+//    	  eval.eval(ty) match {
+//    	  	case Pi(n2, b, c) =>
+//    	  		ty1 match {
+//    	  			case None => val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
+//    	  						//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
+//    	  						(Lam(name, Some(b), body), Pi(n2, b, c))
+//    	  			case Some(l_ty) => if (equalTerms(l_ty, b, ctx)) {
+//    	  									val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
+//    	  									//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
+//    	  									(Lam(name, Some(b), body), Pi(n2, b, c))
+//    	  								} else {
+//    	  								  throw new UnequalTerms(l_ty, b, toNames((name, b) :: ctx))
+//    	  								}
+//    	  		}
+//    	  	case ty1 => throw new ExpectedPi(ty, ty1, toNames(ctx))
+//    	  }
+//      }
       
       case (Lam(name, Some(a), t), None) => {
         //println("" + Lam(name, Some(a), t) + " -l- " + None)
