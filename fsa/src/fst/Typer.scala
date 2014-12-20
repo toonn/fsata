@@ -123,7 +123,7 @@ class Typer(eval: Evaluator) {
       }
       
       case (App(f, t), None) => {
-        /* Dit werkt nog niet, was een poging om inference op app sterker te maken.
+        /* Dit werkt nog niet, was een poging om inference op app sterker te maken. //TODO
         val (t1, t_ty) = tcTerm(t, None, ctx)
         eval.eval(f) match {
           case Lam(name, None, body) => {
@@ -275,7 +275,7 @@ class Typer(eval: Evaluator) {
         }
       }
       
-      /*case (Let(name: String, ty: Term, term: Term, body: Term), Some(a)) => {
+      /*case (Let(name: String, ty: Term, term: Term, body: Term), Some(a)) => { //TODO
         val (ty1, Set) = tcTerm(ty, Some(Set), ctx)
         val (term1, term_ty) = tcTerm(term, Some(ty1), ctx)
         val (body1, body_ty) = tcTerm(eval.termSubstTop(term1, body), Some(a), ctx)
