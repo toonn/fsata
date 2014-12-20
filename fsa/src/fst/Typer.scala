@@ -6,143 +6,107 @@ import Syntax._
  * @author Sven Akkermans and Toon Nolten
  */
 abstract class TypeException() extends Exception {
-  def errorMessage: String;
+  def errorMessage : String;
   override def toString = errorMessage
 }
 
-case class UnequalTerms(t1: Term, t2: Term, names: Names) extends TypeException() {
+case class UnequalTerms(t1 : Term, t2 : Term, names : Names) extends TypeException() {
   override def errorMessage = "Type mismatch: \n" + t1.prettyPrint(names) + " was not equal to " + t2.prettyPrint(names)
 }
-case class ExpectedPi(t: Term, ty: Term, names: Names) extends TypeException() {
+case class ExpectedPi(t : Term, ty : Term, names : Names) extends TypeException() {
   override def errorMessage = "Expected Pi type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-case class ExpectedNat(t: Term, ty: Term, names: Names) extends TypeException() {
+case class ExpectedNat(t : Term, ty : Term, names : Names) extends TypeException() {
   override def errorMessage = "Expected Nat type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-case class ExpectedBool(t: Term, ty: Term, names: Names) extends TypeException() {
+case class ExpectedBool(t : Term, ty : Term, names : Names) extends TypeException() {
   override def errorMessage = "Expected Bool type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-case class ExpectedPair(t: Term, ty: Term, names: Names) extends TypeException() {
+case class ExpectedPair(t : Term, ty : Term, names : Names) extends TypeException() {
   override def errorMessage = "Expected Pair for " + t.prettyPrint(names) + ",\n it's type is " + ty.prettyPrint(names)
 }
-case class ExpectedSet(t: Term, ty: Term, names: Names) extends TypeException() {
+case class ExpectedSet(t : Term, ty : Term, names : Names) extends TypeException() {
   override def errorMessage = "Expected Set type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-case class ExpectedSigma(t: Term, ty: Term, names: Names) extends TypeException() {
+case class ExpectedSigma(t : Term, ty : Term, names : Names) extends TypeException() {
   override def errorMessage = "Expected Sigma type for " + t.prettyPrint(names) + ",\n instead got " + ty.prettyPrint(names)
 }
-case class RequiresAnnotation(t: Term, names: Names) extends TypeException() {
+case class RequiresAnnotation(t : Term, names : Names) extends TypeException() {
   override def errorMessage = "Term requires type annotation: \n" + t.prettyPrint(names)
 }
 
-class Typer(eval: Evaluator) {
+class Typer(eval : Evaluator) {
 
-  def shiftContext(ctx: Context, d: Int, c: Int): Context = ctx match {
+  def shiftContext(ctx : Context, d : Int, c : Int) : Context = ctx match {
     case List() => List()
     case (n, ty) :: ctx => (n, eval.shift(ty, d, c)) :: shiftContext(ctx, d, c + 1)
   }
 
-  def lookupType(d: Int, ctx: Context): Term = {
-    val t: Term = ctx(d)._2
+  def lookupType(d : Int, ctx : Context) : Term = {
+    val t : Term = ctx(d)._2
     eval.shift(t, d + 1, 0)
   }
 
-  def equalTerms(t1: Term, t2: Term, ctx: Context): Boolean = {
+  def equalTerms(t1 : Term, t2 : Term, ctx : Context) : Boolean = {
     val nctx = shiftContext(ctx, 1, 0)
     (eval.eval(t1), eval.eval(t2)) match {
       case (et1, et2) if et1 == et2 => true
 
-      case (Lam(_, None, b1), Lam(_, None, b2))
-      	if equalTerms(b1, b2, nctx) => true
-      case (Lam(_, Some(ty1), b1), Lam(_, Some(ty2), b2))
-      	if equalTerms(ty1, ty2, ctx) & equalTerms(b1, b2, nctx) => true
+      case (Lam(_, None, b1), Lam(_, None, b2)) if equalTerms(b1, b2, nctx) => true
+      case (Lam(_, Some(ty1), b1), Lam(_, Some(ty2), b2)) if equalTerms(ty1, ty2, ctx) & equalTerms(b1, b2, nctx) => true
 
-      case (Pi(_, ty1, ty2), Pi(_, ty3, ty4))
-      	if equalTerms(ty1, ty3, ctx) & equalTerms(ty2, ty4, nctx) => true
+      case (Pi(_, ty1, ty2), Pi(_, ty3, ty4)) if equalTerms(ty1, ty3, ctx) & equalTerms(ty2, ty4, nctx) => true
 
-      case (Pair(p1, p2), Pair(p3, p4))
-      	if equalTerms(p1, p3, ctx) & equalTerms(p2, p4, ctx) => true
-      case (Pair(p1, p2), Sigma(_, s1, s2))
-      	if equalTerms(p1, s1, ctx) & equalTerms(p2, eval.shift(s2, -1, 0), ctx) => true
-      case (Sigma(_, s1, s2), Pair(p1, p2))
-      	if equalTerms(p1, s1, ctx) & equalTerms(p2, eval.shift(s2, -1, 0), ctx) => true
-      case (Sigma(_, s1, s2), Sigma(_, s3, s4))
-      	if equalTerms(s1, s3, ctx) & equalTerms(s2, s4, nctx) => true
-      	
+      case (Pair(p1, p2), Pair(p3, p4)) if equalTerms(p1, p3, ctx) & equalTerms(p2, p4, ctx) => true
+      case (Pair(p1, p2), Sigma(_, s1, s2)) if equalTerms(p1, s1, ctx) & equalTerms(p2, eval.shift(s2, -1, 0), ctx) => true
+      case (Sigma(_, s1, s2), Pair(p1, p2)) if equalTerms(p1, s1, ctx) & equalTerms(p2, eval.shift(s2, -1, 0), ctx) => true
+      case (Sigma(_, s1, s2), Sigma(_, s3, s4)) if equalTerms(s1, s3, ctx) & equalTerms(s2, s4, nctx) => true
+
       // Let moet niet omdat het geen value is.
-      
+
       case (et1, et2) => false
     }
   }
 
-  def typeOf(t: Term, ctx: Context): Term = tcTerm(t, None, ctx)_2
+  def typeOf(t : Term, ctx : Context) : Term = tcTerm(t, None, ctx)_2
 
-  def tcTerm(t: Term, a: Option[Term], ctx: Context): (Term, Term) = {
+  def tcTerm(t : Term, a : Option[Term], ctx : Context) : (Term, Term) = {
     (t, a.map[Term](eval.eval)) match {
 
-      case (Var(d), None) => {	
+      case (Var(d), None) => {
         (Var(d), lookupType(d, ctx))
       }
-      
-      case (Lam(name, None, t), Some(ty)) => {
-    	  //println("" + Lam(n1, ty1, t) + " -l- " + ty)
-    	  eval.eval(ty) match {
-    	  	case Pi(n2, b, c) =>
-    	  		 val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
-    	  		//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
-    	  		(Lam(name, Some(b), body), Pi(n2, b, c))
-    	  	case ty1 => throw new ExpectedPi(ty, ty1, toNames(ctx))
-    	  }
+
+      case (Lam(name, ty1, t), Some(ty)) => {
+        eval.eval(ty) match {
+          case Pi(n2, b, c) =>
+            ty1 match {
+              case None =>
+                val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
+                (Lam(name, Some(b), body), Pi(n2, b, c))
+              case Some(l_ty) => // Deze case is in principe overbodig maar helpt bij het debuggen.
+                // Om ze te verwijderen moet de buitenste case aangepast worden
+                // zodat enkel niet-geannoteerde lambda's matchen.
+                if (equalTerms(l_ty, b, ctx)) {
+                  val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
+                  (Lam(name, Some(b), body), Pi(n2, b, c))
+                } else {
+                  throw new UnequalTerms(l_ty, b, toNames((name, b) :: ctx))
+                }
+            }
+          case ty1 => throw new ExpectedPi(ty, ty1, toNames(ctx))
+        }
       }
-      
-//      case (Lam(name, ty1, t), Some(ty)) => {		//TODO Rereview
-//    	  //println("" + Lam(n1, ty1, t) + " -l- " + ty)
-//    	  eval.eval(ty) match {
-//    	  	case Pi(n2, b, c) =>
-//    	  		ty1 match {
-//    	  			case None => val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
-//    	  						//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
-//    	  						(Lam(name, Some(b), body), Pi(n2, b, c))
-//    	  			case Some(l_ty) => if (equalTerms(l_ty, b, ctx)) {
-//    	  									val (body, _) = tcTerm(t, Some(c), (name, b) :: ctx)
-//    	  									//println("" + Lam(n1, ty1, t) + " _l_ " + Pi(n2, b, c))
-//    	  									(Lam(name, Some(b), body), Pi(n2, b, c))
-//    	  								} else {
-//    	  								  throw new UnequalTerms(l_ty, b, toNames((name, b) :: ctx))
-//    	  								}
-//    	  		}
-//    	  	case ty1 => throw new ExpectedPi(ty, ty1, toNames(ctx))
-//    	  }
-//      }
-      
+
       case (Lam(name, Some(a), t), None) => {
-        //println("" + Lam(name, Some(a), t) + " -l- " + None)
         val (body, c) = tcTerm(t, None, (name, a) :: ctx)
-        //println("" + Lam(name, Some(a), t) + " _l_ " + None)
         (Lam(name, Some(a), body), Pi(name, a, c))
       }
-      
+
       case (App(f, t), None) => {
-        /* Dit werkt nog niet, was een poging om inference op app sterker te maken. //TODO
-        val (t1, t_ty) = tcTerm(t, None, ctx)
-        eval.eval(f) match {
-          case Lam(name, None, body) => {
-            val (body1, body_ty) = tcTerm(eval.termSubstTop(t1, body), None, ctx)
-            tcTerm(f, Some(Pi("_", t_ty, body_ty)), ctx)
-            (App(f, t), body_ty)
-          }
-          case Lam(name, Some(t_ty), body) => {
-            val (body1, body_ty) = tcTerm(eval.termSubstTop(t1, body), None, ctx)
-            tcTerm(f, Some(Pi("_", t_ty, body_ty)), ctx)
-            (App(f, t), body_ty)
-          }
-          case _ => throw new ExpectedPi(f, typeOf(f, ctx), toNames(ctx))
-        }*/
-        //println("App: " + f + " $ " + t)
         val (f1, ty1) = tcTerm(f, None, ctx)
-        //println("f_ty: " + f1 + " : " + ty1)
         eval.eval(ty1) match {
-          case Pi(name, a, b) => { 
+          case Pi(name, a, b) => {
             val (t1, _) = tcTerm(t, Some(a), ctx)
             (App(f1, t1), eval.termSubstTop(t1, b))
           }
@@ -151,15 +115,13 @@ class Typer(eval: Evaluator) {
           }
         }
       }
-      
+
       case (Pi(name, a, b), None) => {
-//        val uname = if (name == "_") { uniqueName(name, toNames(ctx)) } //TODO
-//        			else { name }
-        val (a1, _) = tcTerm(a, Some(Set), ctx) 
+        val (a1, _) = tcTerm(a, Some(Set), ctx)
         val (b1, _) = tcTerm(b, Some(Set), (name, a1) :: ctx)
         (Pi(name, a1, b1), Set)
       }
-      
+
       case (Set, None) => {
         (Set, Set)
       }
@@ -206,19 +168,19 @@ class Typer(eval: Evaluator) {
           }
         }
       }
-      
+
       //NatInd
       case (NatInd, None) => {
-         //(P : Nat -> Set) -> P 0 -> ((n : Nat) -> P n -> P (succ n)) -> (n : Nat) -> P n
-    	  (NatInd, Pi("P", Pi("_", Nat, Set),
-    	               Pi("_", App(Var(0), Zero),
-    	                   Pi("_", Pi("n", Nat,
-    	                		   	   Pi("_", App(Var(2), Var(0)),
-    	                		   		   App(Var(3), Succ(Var(1))))),
-    	                       Pi("n", Nat,
-    	                           App(Var(3), Var(0)))))))
+        //(P : Nat -> Set) -> P 0 -> ((n : Nat) -> P n -> P (succ n)) -> (n : Nat) -> P n
+        (NatInd, Pi("P", Pi("_", Nat, Set),
+          Pi("_", App(Var(0), Zero),
+            Pi("_", Pi("n", Nat,
+              Pi("_", App(Var(2), Var(0)),
+                App(Var(3), Succ(Var(1))))),
+              Pi("n", Nat,
+                App(Var(3), Var(0)))))))
       }
-      
+
       //Bools
       case (Bool, None) => {
         (Bool, Set)
@@ -252,7 +214,7 @@ class Typer(eval: Evaluator) {
         val (b1, _) = tcTerm(b, Some(Set), (v, a1) :: ctx)
         (Sigma(v, a1, b1), Set)
       }
-      case (Pair(s, t), Some(Sigma(v, a , b))) => {
+      case (Pair(s, t), Some(Sigma(v, a, b))) => {
         val (s1, s_ty) = tcTerm(s, Some(a), ctx)
         val (t1, t_ty) = tcTerm(t, Some(eval.termSubstTop(s1, b)), ctx)
         (Pair(s1, t1), Sigma(v, s_ty, t_ty))
@@ -274,25 +236,15 @@ class Typer(eval: Evaluator) {
           case (_, ty) => throw new ExpectedPair(t, ty, toNames(ctx))
         }
       }
-      
-      /*case (Let(name: String, ty: Term, term: Term, body: Term), Some(a)) => { //TODO
-        val (ty1, Set) = tcTerm(ty, Some(Set), ctx)
-        val (term1, term_ty) = tcTerm(term, Some(ty1), ctx)
-        val (body1, body_ty) = tcTerm(eval.termSubstTop(term1, body), Some(a), ctx)
-        (Let(name, ty1, term1, body1), body_ty)
-      }*/
 
       case (t, Some(a)) => {
-        //println("\n" + t + " -- " + a)
-        val (tt: Term, at) = tcTerm(t, None, ctx)
-        val (t1: Term, a1) = (eval.eval(tt), eval.eval(at))
-        //println("\n" + t1 + " __ " + a1)
+        val (tt : Term, at) = tcTerm(t, None, ctx)
+        val (t1 : Term, a1) = (eval.eval(tt), eval.eval(at))
         if (!equalTerms(a, a1, ctx)) {
           throw new UnequalTerms(t, t1, toNames(ctx))
         }
         (t1, a1)
       }
-
 
       //Bools
       case (TUnit, None) => {
@@ -302,14 +254,14 @@ class Typer(eval: Evaluator) {
         (Unit, TUnit)
       }
       //Let expression
-      case (Let(name: String, ty: Term, term: Term, body: Term), None) => {
+      case (Let(name : String, ty : Term, term : Term, body : Term), None) => {
         val (ty1, Set) = tcTerm(ty, Some(Set), ctx)
         val (term1, term_ty) = tcTerm(term, Some(ty1), ctx)
         val (body1, body_ty) = tcTerm(eval.termSubstTop(term1, body), None, ctx)
         (Let(name, ty1, term1, body1), body_ty)
       }
       //TArr
-      case (TArr(t1: Term, t2: Term), None) => {
+      case (TArr(t1 : Term, t2 : Term), None) => {
         val (tt1, tty1) = tcTerm(t1, None, ctx)
         val (tt2, tty2) = tcTerm(t2, None, ctx)
         (TArr(t1, t2), Set)
@@ -317,41 +269,40 @@ class Typer(eval: Evaluator) {
 
       //Identity types
       case (I, None) => {
-       // (A : Set) -> A -> A -> Set
+        // (A : Set) -> A -> A -> Set
         (I, Pi("A", Set,
-        		Pi("_", Var(0),
-        		    Pi("_", Var(1),
-        		        Set))))
-            
+          Pi("_", Var(0),
+            Pi("_", Var(1),
+              Set))))
+
       }
       case (Refl, None) => {
         // (A : Set) -> (x : A) -> I A x x
         (Refl, Pi("A", Set,
-        		   Pi("x", Var(0),
-        			   App(App(App(I, Var(1)), Var(0)), Var(0)))))
+          Pi("x", Var(0),
+            App(App(App(I, Var(1)), Var(0)), Var(0)))))
       }
       case (Subst, None) => {
-       //(A : Set) -> (x : A) -> (y : A) -> (P : A -> Set) -> I A x y -> P x -> P y
+        //(A : Set) -> (x : A) -> (y : A) -> (P : A -> Set) -> I A x y -> P x -> P y
         (Subst, Pi("A", Set,
-        			Pi("x", Var(0),
-        			    Pi("y", Var(1),
-        			        Pi("P", Pi("_", Var(2),
-        			        			Set),
-        			            Pi("_", App(App(App(I,Var(3)),Var(2)),Var(1)),
-        			            	Pi("_", App(Var(1),Var(3)),
-        			            	    App(Var(2), Var(3)))))))))
-        			            	    
-        			         
+          Pi("x", Var(0),
+            Pi("y", Var(1),
+              Pi("P", Pi("_", Var(2),
+                Set),
+                Pi("_", App(App(App(I, Var(3)), Var(2)), Var(1)),
+                  Pi("_", App(Var(1), Var(3)),
+                    App(Var(2), Var(3)))))))))
+
       }
-      
+
       //BoolElim
       case (BoolElim, None) => {
         //(P : Bool -> Set) -> P true -> P false -> (b : Bool)-> P b        
         (BoolElim, Pi("P", Pi("_", Bool, Set),
-        			   Pi("_", App(Var(0), True),
-        			       Pi("_", App(Var(1), False),
-        					   Pi("x", Bool,
-        					       App(Var(3),Var(0)))))))
+          Pi("_", App(Var(0), True),
+            Pi("_", App(Var(1), False),
+              Pi("x", Bool,
+                App(Var(3), Var(0)))))))
       }
 
       case (t, None) => throw new RequiresAnnotation(t, toNames(ctx))
