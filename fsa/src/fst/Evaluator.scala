@@ -113,7 +113,7 @@ class Evaluator {
 		  //Identity
 		  case App(App(App(App(App(App(Subst,a),x),y),p),App(App(Refl,b),z)),px) if a == b => Some(px)
 
-		  case App(Lam(n,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
+		  case App(Lam(_,a,t),s) => Some(termSubstTop(s,t))	//E-AppAbs
 		  
 		  //Basic E-rules
 		  case Lam(x,t1,t2) if eval1(t2) != None => Some(Lam(x,t1,eval(t2))) //E-Abs1
